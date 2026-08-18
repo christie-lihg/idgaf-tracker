@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Symptom Tracker</title>
+<meta name="description" content="A private, offline-first tracker for perimenopause and menopause symptoms, cycles and daily wellness. Your data never leaves your device.">
+<meta name="theme-color" content="#2d5016">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Symptom Tracker">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="apple-touch-icon" href="icons/icon-192.svg">
+<link rel="icon" href="icons/icon-192.svg" type="image/svg+xml">
+
+<!-- Fonts: remote, but the app degrades gracefully to system fonts offline -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap">
+
+<link rel="stylesheet" href="css/styles.css">
+
+<!--
+  IMPORTANT — DO NOT convert these to type="module".
+  The markup below uses 46 inline handlers (onclick="showView('today')" etc.)
+  which resolve function names against the GLOBAL scope. ES modules have their
+  own scope, so switching to modules silently breaks every button in the app.
+  `defer` preserves execution order and runs after the DOM is parsed.
+  See docs/ARCHITECTURE.md.
+-->
+<script defer src="vendor/chart.umd.min.js"></script>
+<script defer src="js/symptoms.js"></script>
+<script defer src="js/storage.js"></script>
+<script defer src="js/utils.js"></script>
+<script defer src="js/nav.js"></script>
+<script defer src="js/morning.js"></script>
+<script defer src="js/today.js"></script>
+<script defer src="js/dashboard.js"></script>
+<script defer src="js/history.js"></script>
+<script defer src="js/past-day-modal.js"></script>
+<script defer src="js/cycle.js"></script>
+<script defer src="js/import-health.js"></script>
+<script defer src="js/init.js"></script>
+<script defer src="js/register-sw.js"></script>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-logo">✦</div>
+    <div class="nav-name">Finest Wellness</div>
+  </div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showView('today')">⚡ Today</button>
+    <button class="nav-tab" onclick="showView('dashboard')">📊 Dashboard</button>
+    <button class="nav-tab" onclick="showView('period')">🩸 Cycle</button>
+    <button class="nav-tab" onclick="showView('history')">🗂 History</button>
+  </div>
+  <div class="nav-right">
+  </div>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══ PAST DAY MODAL ══════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="pastModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3>Log a past day</h3>
+      <button class="modal-close" onclick="closePastModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="past-section-title">Date</div>
+      <input type="date" id="pastDate" style="border:1.5px solid var(--border);border-radius:8px;padding:8px 12px;font-size:14px;font-family:'Inter',sans-serif;outline:none;width:100%;margin-bottom:4px" onfocus="this.style.borderColor='var(--sage)'" onblur="this.style.borderColor='var(--border)'">
+
+      <div class="past-section-title">🌙 Overnight symptoms</div>
+      <div class="past-on-grid" id="pastOvernightGrid"></div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px">
+        <div>
+          <div class="past-section-title" style="margin-top:0">Sleep hours</div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap" id="pastSleepHours"></div>
+        </div>
+        <div>
+          <div class="past-section-title" style="margin-top:0">Sleep quality</div>
+          <div style="display:grid;grid-template-columns:1fr 32px;gap:8px;align-items:center">
+            <input type="range" class="sli" id="pastSleepQual" min="0" max="10" value="5" oninput="document.getElementById('pastSQVal').textContent=this.value">
+            <div class="sli-val" id="pastSQVal">5</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="past-section-title">⚡ Daytime symptoms (check all that occurred)</div>
+      <div class="past-sym-grid" id="pastSymGrid"></div>
+
+      <div class="past-section-title">🌡 Wellness ratings</div>
+      <div id="pastWellnessSliders"></div>
+
+      <div class="past-section-title">📝 Note</div>
+      <textarea class="notes-area" id="pastNote" placeholder="Optional..." style="min-height:56px"></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closePastModal()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="savePastDay()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ PERIOD MODAL ════════════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="periodModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3 id="periodModalTitle">Log cycle day</h3>
+      <button class="modal-close" onclick="closePeriodModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="past-section-title" style="margin-top:0">Flow</div>
+      <div class="flow-btns">
+        <div class="flow-btn" data-f="none" onclick="selectFlow('none')">No period</div>
+        <div class="flow-btn" data-f="spotting" onclick="selectFlow('spotting')">🟡 Spotting</div>
+        <div class="flow-btn" data-f="light" onclick="selectFlow('light')">🔴 Light</div>
+        <div class="flow-btn" data-f="medium" onclick="selectFlow('medium')">🔴🔴 Medium</div>
+        <div class="flow-btn" data-f="heavy" onclick="selectFlow('heavy')">🔴🔴🔴 Heavy</div>
+      </div>
+      <div class="past-section-title">Note (optional)</div>
+      <textarea class="notes-area" id="periodNote" placeholder="e.g. cramping, clots, color..." style="min-height:56px"></textarea>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closePeriodModal()">Cancel</button>
+      <button class="btn btn-primary btn-sm" onclick="savePeriodDay()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TODAY ═══════════════════════════════════════════════════════════════ -->
+<div class="view active" id="view-today">
+<div class="container">
+  <div class="pt" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div>
+      <h2>Today's Log</h2>
+      <p id="todayLabel">—</p>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-ghost btn-sm" onclick="openPastModal()">+ Log past day</button>
+      <button class="btn btn-ghost btn-sm" onclick="showView('dashboard')">📊 See this week →</button>
+    </div>
+  </div>
+
+  <!-- ── MORNING SUMMARY ── -->
+  <div class="morning-card pending" id="morningCard">
+    <div class="morning-header" onclick="toggleMorning()">
+      <div class="mh-icon" id="mhIcon">🌅</div>
+      <div class="mh-text">
+        <div class="mh-title">Morning check-in</div>
+        <div class="mh-sub" id="mhSub">How was your night? Takes 30 seconds.</div>
+      </div>
+      <div class="mh-status" id="mhStatus">Not done</div>
+      <div class="mh-chevron open" id="mhChevron">▼</div>
+    </div>
+    <div class="morning-body open" id="morningBody">
+
+      <div class="morning-section-title">What happened overnight? (check all that apply)</div>
+      <div class="on-grid" id="overnightGrid"></div>
+
+      <div class="morning-section-title">How many hours did you sleep?</div>
+      <div class="sleep-hours-row" id="sleepHoursRow"></div>
+
+      <div class="morning-section-title">How would you rate last night's sleep quality? <span id="sleepQualVal" style="color:var(--forest);font-size:13px;font-weight:700"></span></div>
+      <div class="sli-row" style="margin-bottom:16px">
+        <div class="sli-lbl" style="color:var(--muted);font-size:11px">0 = Terrible</div>
+        <input type="range" class="sli" id="sleepQualSlider" min="0" max="10" value="5"
+          oninput="document.getElementById('sleepQualVal').textContent=this.value+'/10'">
+        <div class="sli-lbl" style="color:var(--muted);font-size:11px;text-align:right">10 = Great</div>
+      </div>
+
+      <div class="morning-section-title">Anything to note about last night?</div>
+      <textarea class="morning-note" id="morningNote" placeholder="e.g. woke up 3x, room too hot, anxious before bed..."></textarea>
+
+      <div class="morning-save-row">
+        <span class="morning-save-note" id="morningSaveNote"></span>
+        <button class="btn btn-primary btn-sm" onclick="saveMorning()">Save morning check-in ✓</button>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="ch">
+      <div class="ch-icon">⚡</div>
+      <div><h3>Tap when it happens</h3><p>Log symptoms in real time — multiple taps = multiple occurrences</p></div>
+    </div>
+    <div class="cb">
+      <div class="sym-grid" id="symGrid"></div>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div class="card">
+    <div class="ch">
+      <div class="ch-icon">🕐</div>
+      <div><h3>Today's timeline</h3><p id="tlCount">No events yet</p></div>
+      <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="clearToday()">Clear</button>
+    </div>
+    <div class="cb" id="timeline">
+      <div class="empty" style="padding:20px 0">
+        <div class="ei" style="font-size:28px">🌿</div>
+        <p>Tap a symptom above to start logging.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daily wellness check (quick sliders — optional, end of day) -->
+  <div class="card">
+    <div class="ch">
+      <div class="ch-icon">🌡</div>
+      <div><h3>End-of-day wellness (optional)</h3><p>0 = worst · 10 = best</p></div>
+      <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="saveWellness()">Save</button>
+    </div>
+    <div class="cb">
+      <div class="sli-row">
+        <div class="sli-lbl">🔆 Energy</div>
+        <input type="range" class="sli" id="w0" min="0" max="10" value="5" oninput="document.getElementById('wv0').textContent=this.value">
+        <div class="sli-val" id="wv0">5</div>
+      </div>
+      <div class="sli-row">
+        <div class="sli-lbl">💭 Mood</div>
+        <input type="range" class="sli" id="w1" min="0" max="10" value="5" oninput="document.getElementById('wv1').textContent=this.value">
+        <div class="sli-val" id="wv1">5</div>
+      </div>
+      <div class="sli-row">
+        <div class="sli-lbl">😴 Sleep Quality</div>
+        <input type="range" class="sli" id="w2" min="0" max="10" value="5" oninput="document.getElementById('wv2').textContent=this.value">
+        <div class="sli-val" id="wv2">5</div>
+      </div>
+      <div class="sli-row">
+        <div class="sli-lbl">🧠 Brain Clarity</div>
+        <input type="range" class="sli" id="w3" min="0" max="10" value="5" oninput="document.getElementById('wv3').textContent=this.value">
+        <div class="sli-val" id="wv3">5</div>
+      </div>
+      <div class="sli-row">
+        <div class="sli-lbl">🔥 Hot Flash Severity</div>
+        <input type="range" class="sli" id="w4" min="0" max="10" value="5" oninput="document.getElementById('wv4').textContent=this.value">
+        <div class="sli-val" id="wv4">5</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Note -->
+  <div class="card">
+    <div class="ch"><div class="ch-icon">📝</div><div><h3>Daily note</h3><p>What might be affecting your symptoms today?</p></div></div>
+    <div class="cb">
+      <textarea class="notes-area" id="dayNote" placeholder="e.g. stressful day, bad sleep, started new supplement..." oninput="saveDayNote(this.value)"></textarea>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ═══ PERIOD / CYCLE ════════════════════════════════════════════════════════ -->
+<div class="view" id="view-period">
+<div class="container">
+  <div class="pt"><h2>Cycle Tracker</h2><p>Tap any day to log flow. Pattern data feeds into your dashboard.</p></div>
+
+  <div class="cycle-stats" id="cycleStats">
+    <div class="cstat"><div class="cstat-val" id="csCycleLen">—</div><div class="cstat-lbl">Avg cycle length</div></div>
+    <div class="cstat"><div class="cstat-val" id="csPeriodLen">—</div><div class="cstat-lbl">Avg period length</div></div>
+    <div class="cstat"><div class="cstat-val" id="csLastPeriod">—</div><div class="cstat-lbl">Last period started</div></div>
+  </div>
+
+  <div class="card">
+    <div class="cb">
+      <div class="month-nav">
+        <button class="mnav-btn" onclick="cycleMonthNav(-1)">◀</button>
+        <h3 id="cycleMonthLabel">—</h3>
+        <button class="mnav-btn" onclick="cycleMonthNav(1)">▶</button>
+      </div>
+      <div class="cycle-cal" id="cycleCal"></div>
+      <div class="flow-legend">
+        <div class="flow-legend-item"><div class="flow-dot" style="background:#fef3e2;border:1px solid #f0b429"></div>Spotting</div>
+        <div class="flow-legend-item"><div class="flow-dot" style="background:#fde8e8;border:1px solid #e88"></div>Light</div>
+        <div class="flow-legend-item"><div class="flow-dot" style="background:#f5b8b8;border:1px solid #d44"></div>Medium</div>
+        <div class="flow-legend-item"><div class="flow-dot" style="background:#d44;border:1px solid #8b1a1a"></div>Heavy</div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ═══ DASHBOARD ════════════════════════════════════════════════════════════ -->
+<div class="view" id="view-dashboard">
+<div class="container">
+  <div class="pt"><h2>Your Wellness Dashboard</h2><p id="dashSub">—</p></div>
+
+  <!-- KPIs (auto-calculated from this week's logs) -->
+  <div class="kpi-row">
+    <div class="kpi">
+      <div class="kpi-label">This Week</div>
+      <div class="kpi-value" id="kpiEvents">—</div>
+      <div class="kpi-sub">symptom events</div>
+      <div class="kpi-trend neutral" id="kpiEventsTrend">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Hot Flashes</div>
+      <div class="kpi-value" id="kpiHF">—</div>
+      <div class="kpi-sub">this week</div>
+      <div class="kpi-trend neutral" id="kpiHFTrend">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Avg Energy</div>
+      <div class="kpi-value" id="kpiEnergy">—</div>
+      <div class="kpi-sub">out of 10</div>
+      <div class="kpi-trend neutral" id="kpiEnergyTrend">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-label">Days Logged</div>
+      <div class="kpi-value" id="kpiDays">—</div>
+      <div class="kpi-sub">past 7 days</div>
+      <div class="kpi-trend neutral" id="kpiDaysTrend">—</div>
+    </div>
+  </div>
+
+  <div id="dashEmpty" class="card">
+    <div class="cb">
+      <div class="empty">
+        <div class="ei">🌿</div>
+        <h3>No data yet</h3>
+        <p>Start logging symptoms in the Today tab. The dashboard builds automatically from your daily logs.</p>
+        <br><button class="btn btn-primary" onclick="showView('today')">Go to Today →</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="dashContent" style="display:none">
+
+    <!-- Cycle strip -->
+    <div class="card" id="dashCycleCard" style="display:none">
+      <div class="ch"><div class="ch-icon">🩸</div><div><h3>This week's cycle</h3><p>Period days overlaid on your symptom data</p></div>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="showView('period')">Full calendar →</button>
+      </div>
+      <div class="cb" id="dashCycleStrip"></div>
+    </div>
+
+    <!-- Weekly heatmap -->
+    <div class="card">
+      <div class="ch"><div class="ch-icon">🗓</div><div><h3>This week's symptom heatmap</h3><p>Each cell = how many times that symptom was logged that day</p></div></div>
+      <div class="cb" id="heatmap" style="overflow-x:auto"></div>
+    </div>
+
+    <!-- Event frequency + wellness trends -->
+    <div class="two-col">
+      <div class="card">
+        <div class="ch"><div class="ch-icon">📈</div><div><h3>Daily event count</h3><p>Total symptoms logged per day</p></div></div>
+        <div class="cb"><div class="cw"><canvas id="chartEvents"></canvas></div></div>
+      </div>
+      <div class="card">
+        <div class="ch"><div class="ch-icon">🌡</div><div><h3>Wellness trends</h3><p>Energy, mood, sleep — from daily ratings</p></div></div>
+        <div class="cb"><div class="cw"><canvas id="chartWellness"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- Top symptoms this week -->
+    <div class="card">
+      <div class="ch"><div class="ch-icon">🔝</div><div><h3>Most frequent this week</h3><p>Ranked by number of logged events</p></div></div>
+      <div class="cb" id="topSymptoms"></div>
+    </div>
+
+    <!-- Time-of-day pattern -->
+    <div class="card">
+      <div class="ch"><div class="ch-icon">🕐</div><div><h3>Time-of-day pattern</h3><p>When symptoms tend to peak</p></div></div>
+      <div class="cb"><div class="cw"><canvas id="chartTOD"></canvas></div></div>
+    </div>
+
+    <!-- Weekly summary note for provider -->
+    <div class="card">
+      <div class="ch"><div class="ch-icon">📋</div><div><h3>This week's summary</h3><p>Auto-generated from your logs — copy to share with your provider</p></div>
+        <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="copyWeeklySummary()">📋 Copy</button>
+      </div>
+      <div class="cb">
+        <div id="weeklySummaryText" style="font-size:13px;line-height:1.7;color:var(--text2);white-space:pre-wrap;background:var(--surface2);border-radius:8px;padding:14px;border:1px solid var(--border)"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<!-- ═══ HISTORY ═══════════════════════════════════════════════════════════════ -->
+<div class="view" id="view-history">
+<div class="container">
+  <div class="pt" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px">
+    <div><h2>Log History</h2><p>All days with at least one entry, newest first.</p></div>
+    <button class="btn btn-primary btn-sm" onclick="openPastModal()">+ Log past day</button>
+  </div>
+  <div class="card"><div class="cb" id="historyList"></div></div>
+</div>
+</div>
+
+</body>
+</html>
