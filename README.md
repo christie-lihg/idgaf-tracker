@@ -1,7 +1,14 @@
-# 🌿 Symptom Tracker
+# 🌿 IDGAF Tracker
 
 A private, offline-first web app for tracking perimenopause and menopause symptoms,
 cycles, and daily wellness — and turning them into a summary you can hand to a doctor.
+
+> **On the name, and one rule that follows from it.** The app is irreverent on
+> purpose — the don't-give-a-fuck phase is a real part of perimenopause, and naming
+> it that way says "built by someone who's in it." But the app has two audiences. The
+> **weekly summary export is clinical output** that gets handed to a doctor, so it
+> carries no branding and no profanity — it opens with `Week of <date>` and stays
+> neutral. Keep it that way: do not add an app-name header to the export.
 
 **Every entry stays on your device.** There is no backend, no account, no analytics,
 and no network call that carries your health data anywhere.
