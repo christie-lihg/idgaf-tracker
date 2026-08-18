@@ -18,7 +18,23 @@ because they have nothing to show but recollection.
 Recollection is the weak link. What changes an appointment is *data*: "34 hot flashes
 in the last 30 days, clustered 9pm–2am, energy averaging 4.1/10."
 
-This app is built to produce exactly that sentence.
+### Why this is a business problem, not just a health one
+
+Perimenopause lands squarely on people in their late 40s and 50s — peak seniority,
+peak institutional knowledge, the most expensive people in any organisation to
+replace. The symptoms are cognitive and physical: disrupted sleep, brain fog,
+anxiety, fatigue. They degrade output on unpredictable days, and they are almost
+never named as the cause, because nobody has the data to name them.
+
+For anyone running or operating a business, that is a capacity problem hiding inside
+a health problem. You cannot plan around a pattern you cannot see. Making the pattern
+visible is what turns "I had a bad week" into "my lowest-output days track sleep
+quality below 5, so deep work moves to mornings."
+
+The same architecture scales to employers without changing: because every entry stays
+on the individual's own device, a company can support its people without ever holding
+their health data. There is no server to breach and no records to subpoena — a
+promise no cloud-based health app can honestly make.
 
 ## What it does
 
@@ -107,12 +123,21 @@ docs/                      architecture notes + demo data seeder
 
 Ordered by how much each one matters to someone actually using this:
 
+- [ ] **Work-capacity rating** — a sixth daily slider next to the existing five, so the
+      dashboard can correlate symptoms against output directly ("lowest-output days
+      track sleep quality below 5"). This is what turns a health record into a
+      capacity record.
 - [ ] **Export / import JSON** — right now clearing site data is unrecoverable
 - [ ] **PDF summary** for appointments, not just clipboard text
 - [ ] **Symptom↔cycle correlation** — "hot flashes spike on cycle days 24–28"
 - [ ] **Reminders** to log the morning check-in
 - [ ] **Custom symptoms** beyond the built-in 22
 - [ ] **Optional encrypted sync** across devices — opt-in, end-to-end, never default
+
+When adding a wellness metric, **append** to `WELLNESS_ITEMS` in `js/symptoms.js` —
+never insert or reorder. Stored entries key wellness values by array position, so
+reordering silently relabels every rating already logged. Same rule applies to `SYMS`.
+See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Medical disclaimer
 
