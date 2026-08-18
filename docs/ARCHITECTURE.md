@@ -27,6 +27,17 @@ change. You must also replace all 46 inline handlers with `addEventListener`
 bindings, including the ones generated inside template strings in `today.js`,
 `history.js` and `cycle.js`.
 
+## Two registers: app name vs clinical export
+
+The app is branded **IDGAF Tracker**. The weekly summary produced by
+`buildWeeklySummary()` in `js/dashboard.js` is **not** branded, and must not become
+so — it is generated to be pasted into a message to a clinician, or printed and
+carried into an appointment. It opens with `Week of <date> – <date>` and contains
+only dates, counts, averages and the user's own notes.
+
+If you are adding a PDF or richer export, keep the same rule: the product can be
+irreverent, the clinical artefact it emits cannot be.
+
 ## Script load order
 
 `index.html` loads scripts with `defer`, which guarantees they execute **in document

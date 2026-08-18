@@ -1,4 +1,4 @@
-/* Symptom Tracker — offline-first service worker.
+/* IDGAF Tracker — offline-first service worker.
  *
  * The app has no backend: every entry lives in this device's localStorage.
  * So the only thing worth caching is the app shell, and cache-first is the
@@ -7,7 +7,7 @@
  * Bump CACHE_VERSION whenever any shell file changes, or returning users will
  * keep booting the old cached build.
  */
-const CACHE_VERSION = 'symptom-tracker-v1';
+const CACHE_VERSION = 'idgaf-tracker-v2';
 
 const SHELL = [
   './',
