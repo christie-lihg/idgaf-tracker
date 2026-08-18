@@ -102,6 +102,31 @@ key when flow is `'none'` rather than storing it — so absence is meaningful, a
 - **Add new files to the `SHELL` array.** A new `js/` file that is not listed will
   work online and 404 offline — which you will not notice in normal development.
 
+### While developing, the cache will lie to you
+
+This bites during any edit session, and it does not look like a caching problem —
+it looks like your change did not work. You edit `css/styles.css`, reload, and see
+the old styling, because the worker serves its cached copy first.
+
+Before concluding an edit failed, check whether the browser is even using it:
+
+```js
+// does the running page have the new token, and what is on disk?
+getComputedStyle(document.documentElement).getPropertyValue('--heat1')   // '' = stale
+await (await fetch('css/styles.css', {cache:'reload'})).text()           // the real file
+```
+
+If the token is empty but the fetched file contains it, you are looking at cache,
+not a bug. Clear it with:
+
+```js
+navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
+caches.keys().then(ks => ks.forEach(k => caches.delete(k)));
+```
+
+then reload. Or tick **Application → Service Workers → Bypass for network** in
+DevTools for the session.
+
 Cross-origin requests (Google Fonts) use network-first with a cache fallback, and the
 CSS declares system-font fallbacks, so a font failure degrades quietly.
 

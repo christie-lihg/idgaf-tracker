@@ -1,3 +1,20 @@
+/* Read a CSS custom property so JS-drawn things (Chart.js, the cycle
+ * calendar) follow the stylesheet instead of hardcoding hex. Re-theming the
+ * app is then a single edit to :root in css/styles.css.
+ *
+ * themeColor('rose')      -> "#ff2d78"
+ * themeColor('rose', .55) -> "rgba(255,45,120,0.55)"
+ */
+function themeColor(name, alpha){
+  const v = getComputedStyle(document.documentElement)
+              .getPropertyValue('--' + name).trim();
+  if(alpha === undefined || !v.startsWith('#')) return v;
+  let h = v.slice(1);
+  if(h.length === 3) h = h.split('').map(c => c + c).join('');
+  const n = parseInt(h, 16);
+  return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${alpha})`;
+}
+
 // UTILS
 // ═══════════════════════════════════════════════════════════════
 function fmtFull(d){return new Date(d+'T12:00:00').toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})}

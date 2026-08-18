@@ -120,7 +120,7 @@ function renderPeriodCalendar(){
     if(pdata&&pdata.flow){
       const dot=document.createElement('div');
       dot.className='cd-dot';
-      dot.style.background=pdata.flow==='spotting'?'#f0b429':pdata.flow==='light'?'#e88':pdata.flow==='medium'?'#d44':'#8b1a1a';
+      dot.style.background=pdata.flow==='spotting'?themeColor('flow-spot'):pdata.flow==='light'?themeColor('flow-light'):pdata.flow==='medium'?themeColor('flow-med'):themeColor('flow-heavy');
       cell.appendChild(dot);
     }
     cell.onclick=()=>openPeriodModal(dateStr,pdata);
@@ -185,10 +185,10 @@ function renderDashCycleStrip(days){
       const isToday=d===todayStr();
       let bg='var(--surface2)',border='var(--border)',dot='';
       if(pdata){
-        if(pdata.flow==='spotting'){bg='#fef3e2';border='#f0b429';dot='🟡';}
-        else if(pdata.flow==='light'){bg='#fde8e8';border='#e88';dot='🔴';}
-        else if(pdata.flow==='medium'){bg='#f5b8b8';border='#d44';dot='🔴🔴';}
-        else if(pdata.flow==='heavy'){bg='#f0b0b0';border='#8b1a1a';dot='🔴🔴🔴';}
+        if(pdata.flow==='spotting'){bg=themeColor('flow-spot',.22);border=themeColor('flow-spot');dot='🟡';}
+        else if(pdata.flow==='light'){bg=themeColor('flow-light',.28);border=themeColor('flow-light');dot='🔴';}
+        else if(pdata.flow==='medium'){bg=themeColor('flow-med',.28);border=themeColor('flow-med');dot='🔴🔴';}
+        else if(pdata.flow==='heavy'){bg=themeColor('flow-heavy',.30);border=themeColor('flow-heavy');dot='🔴🔴🔴';}
       }
       return `<div style="background:${bg};border:1.5px solid ${border};border-radius:8px;padding:8px 4px;text-align:center;${isToday?'font-weight:700':''}">
         <div style="font-size:10px;color:var(--muted)">${dayLabel}</div>
