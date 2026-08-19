@@ -8,17 +8,17 @@
        --leaf    bright highlight        --mint   pale tint fill
        --rose    alert + period flow     --amber  warning / caution
      Renaming them means touching every rule, so we kept the roles instead. */
-  --forest:#2b1b6b;   /* deep indigo — nav, headings                       */
-  --sage:#00a99d;     /* teal — secondary chrome, links                    */
-  --leaf:#00d1c1;     /* bright turquoise — highlights, active states      */
-  --mint:#d9fbf7;     /* pale cyan — tint fills, icon chips                */
-  --rose:#ff2d78;     /* hot magenta — alerts, period flow                 */
-  --amber:#ffc42e;    /* highlighter yellow — warnings, accents            */
+  --forest:#6C2BD9;   /* vivid purple — nav, headings                      */
+  --sage:#00B8B8;     /* teal — secondary chrome, links                    */
+  --leaf:#00D9D9;     /* bright turquoise — highlights, active states      */
+  --mint:#D4FBFB;     /* pale cyan — tint fills, icon chips                */
+  --rose:#FF2D78;     /* hot magenta — alerts, period flow                 */
+  --amber:#FFC42E;    /* highlighter yellow — warnings, accents            */
 
-  --bg:#fdf6e8;       /* cream — 90s paper, never stark white              */
+  --bg:#FFFDF6;       /* bright paper ground under the confetti            */
   --surface:#fff;
-  --surface2:#fff8ec;
-  --border:#1a1633;   /* near-black: 90s means HARD outlines, not soft edges*/
+  --surface2:#FFF9EC;
+  --border:#12102B;   /* near-black: 90s means HARD outlines, not soft edges*/
   --text:#161329;
   --text2:#453f6b;
   --muted:#7d76a8;
@@ -31,15 +31,15 @@
      enough apart in luminance to stay readable side by side. */
   --chart1:#ff6b2c;   /* energy   */
   --chart2:#7b2ff7;   /* mood     */
-  --chart3:#00a99d;   /* sleep    */
+  --chart3:#00B8B8;   /* sleep    */
   --chart4:#2d7ff9;   /* clarity  */
 
   /* Symptom-frequency heat ramp. Teal->indigo on purpose: magenta is
      reserved for period flow, so the two scales can never be confused. */
   --heat0:#eef8f6;
-  --heat1:#8ee6dc;
-  --heat2:#00a99d;
-  --heat3:#2b1b6b;
+  --heat1:#7FE9E9;
+  --heat2:#00B8B8;
+  --heat3:#6C2BD9;
 
   /* Period flow scale — light to heavy */
   --flow-spot:#ffc42e;
@@ -319,79 +319,142 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .mnav-btn:hover{border-color:var(--sage)}
 
 /* ══════════════════════════════════════════════════════════════════════
-   90s LAYER
-   Memphis energy lives in the CHROME (nav, buttons, headers, empty states).
-   Data surfaces — charts, heatmap, timeline — stay disciplined and legible,
-   because this app gets read at 3am and contrast is not a style choice.
+   SAVED BY THE BELL LAYER
+   Memphis Milano at full volume: geometric confetti, squiggles, zigzags,
+   chunky type with hard offset shadows, nothing quite square to the grid.
+
+   The discipline that keeps it usable: all this energy lives in the CHROME
+   — page background, nav, headings, buttons, empty states. Card interiors
+   stay white and calm, because this gets read at 3am and the charts have to
+   be legible. Loud frame, quiet data.
    ══════════════════════════════════════════════════════════════════════ */
 
-/* Confetti: squiggles and dots scattered behind the page, low opacity so
-   they never compete with data. Pure CSS gradients — no image requests. */
-body{
-  background-color:var(--bg);
-  background-image:
-    radial-gradient(circle at 12% 18%, var(--leaf) 0 5px, transparent 5px),
-    radial-gradient(circle at 88% 9%,  var(--rose) 0 4px, transparent 4px),
-    radial-gradient(circle at 76% 62%, var(--amber) 0 6px, transparent 6px),
-    radial-gradient(circle at 22% 78%, var(--sage) 0 4px, transparent 4px);
-  background-size:520px 520px;
-  background-attachment:fixed;
+/* Confetti ground. Cards are opaque, so the pattern reads in the gutters
+   and margins rather than behind text. */
+body{background-color:var(--bg)}
+
+/* Confetti as a fixed underlay rather than a body background, so its
+   intensity is tunable via opacity without touching the artwork, and it
+   never scrolls into text. Spread wide (560px tile) so shapes land in the
+   gutters instead of behind the content column. */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:url('memphis-tile.svg') repeat;
+  background-size:560px 560px;
+  opacity:.5;
 }
 .view{position:relative;z-index:1}
 
-/* Nav: solid block, hard bottom rule */
-.nav{border-bottom:var(--bw) solid var(--border);box-shadow:0 3px 0 var(--rose)}
-.nav-name{letter-spacing:.3px}
-.nav-logo{border:2px solid rgba(255,255,255,.55)}
-.nav-tab{border-radius:6px;text-transform:uppercase;letter-spacing:.6px;font-weight:600}
-.nav-tab.active{background:var(--leaf);color:var(--border)}
-
-/* Headings: chunky, tight, slightly angled accent underline */
-.pt h2{letter-spacing:-.5px;text-transform:uppercase}
-.pt h2::after{
-  content:'';display:block;width:64px;height:6px;margin-top:6px;
-  background:linear-gradient(90deg,var(--rose) 0 33%,var(--amber) 33% 66%,var(--leaf) 66%);
+/* ── NAV: vivid block + the multicolour stripe ─────────────────────── */
+.nav{
+  background:var(--forest);
+  border-bottom:var(--bw) solid var(--border);
+  box-shadow:none;
+  position:relative;
+}
+.nav::after{                       /* the chunky rainbow rule */
+  content:'';position:absolute;left:0;right:0;bottom:-9px;height:7px;
+  background:linear-gradient(90deg,
+    var(--rose) 0 25%, var(--amber) 25% 50%, var(--leaf) 50% 75%, var(--sage) 75%);
+  border-bottom:var(--bw) solid var(--border);
+}
+.nav-name{
+  letter-spacing:.5px;text-transform:uppercase;
+  text-shadow:2px 2px 0 var(--rose);
+}
+.nav-logo{border:2.5px solid var(--border);background:var(--amber)}
+.nav-tab{
+  border-radius:7px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;
+  border:2px solid transparent;
+}
+.nav-tab:hover{background:rgba(255,255,255,.16)}
+.nav-tab.active{
+  background:var(--leaf);color:var(--border);
+  border:2px solid var(--border);box-shadow:2px 2px 0 var(--border);
 }
 
-/* Card headers get the tint + hard rule */
-.ch{background:var(--mint);border-bottom:var(--bw) solid var(--border)}
-.ch-icon{border:2px solid var(--border);border-radius:6px;background:var(--surface)}
+/* ── HEADINGS: chunky, tilted, hard drop shadow ────────────────────── */
+.pt{position:relative}
+.pt h2{
+  text-transform:uppercase;letter-spacing:-.5px;
+  color:var(--forest);
+  display:inline-block;transform:rotate(-1.2deg);
+  background:var(--surface);
+  border:2.5px solid var(--border);
+  border-radius:8px;
+  padding:7px 16px 8px;
+  box-shadow:5px 5px 0 var(--rose);
+}
+.pt h2::after{
+  content:'';display:block;height:8px;margin-top:8px;
+  border:2px solid var(--border);
+  background:linear-gradient(90deg,
+    var(--rose) 0 25%, var(--amber) 25% 50%, var(--leaf) 50% 75%, var(--forest) 75%);
+}
+.pt p{
+  font-weight:600;display:inline-block;
+  background:var(--surface);border:2px solid var(--border);border-radius:6px;
+  padding:2px 10px;margin-top:8px;
+}
 
-/* Buttons: offset block shadow that depresses on click */
+/* ── CARDS: hard outline, chunky offset, tinted header ─────────────── */
+.card{box-shadow:5px 5px 0 var(--border)}
+.ch{
+  background:var(--mint);
+  border-bottom:var(--bw) solid var(--border);
+}
+.ch h3{text-transform:uppercase;letter-spacing:.4px}
+.ch-icon{
+  border:2.5px solid var(--border);border-radius:7px;background:var(--amber);
+  transform:rotate(-4deg);
+}
+
+/* ── BUTTONS: press-in blocks ──────────────────────────────────────── */
 .btn,button.btn,.btn-primary{
   border:var(--bw) solid var(--border)!important;border-radius:8px!important;
-  box-shadow:3px 3px 0 var(--border);font-weight:700;
-  text-transform:uppercase;letter-spacing:.5px;
+  box-shadow:3px 3px 0 var(--border);
+  font-weight:700;text-transform:uppercase;letter-spacing:.6px;
   transition:transform .06s ease, box-shadow .06s ease;
 }
 .btn:active,button.btn:active,.btn-primary:active{
   transform:translate(3px,3px);box-shadow:0 0 0 var(--border);
 }
 
-/* KPI tiles: alternating accent top-rules, like a Trapper Keeper divider */
-.kpi{border:var(--bw) solid var(--border);border-radius:8px;box-shadow:var(--shadow)}
-.kpi:nth-child(1){border-top:7px solid var(--rose)}
-.kpi:nth-child(2){border-top:7px solid var(--amber)}
-.kpi:nth-child(3){border-top:7px solid var(--leaf)}
-.kpi:nth-child(4){border-top:7px solid var(--sage)}
+/* ── KPI TILES: alternating accent caps, alternating tilt ──────────── */
+.kpi{
+  border:var(--bw) solid var(--border);border-radius:9px;
+  box-shadow:4px 4px 0 var(--border);background:var(--surface);
+}
+.kpi:nth-child(1){border-top:9px solid var(--rose);transform:rotate(-.7deg)}
+.kpi:nth-child(2){border-top:9px solid var(--amber);transform:rotate(.5deg)}
+.kpi:nth-child(3){border-top:9px solid var(--leaf);transform:rotate(-.4deg)}
+.kpi:nth-child(4){border-top:9px solid var(--forest);transform:rotate(.8deg)}
 
-/* Symptom tiles: chunky, and they physically press in */
+/* ── SYMPTOM TILES: chunky, and they physically depress ────────────── */
 .sym-tile{
-  border:var(--bw) solid var(--border)!important;border-radius:8px;
-  box-shadow:2px 2px 0 var(--border);
+  border:2.5px solid var(--border)!important;border-radius:9px;
+  box-shadow:3px 3px 0 var(--border);
   transition:transform .06s ease, box-shadow .06s ease, background .12s ease;
 }
 .sym-tile:hover{background:var(--mint)}
-.sym-tile:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--border)}
+.sym-tile:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--border)}
 
-/* Inputs and notes read as filled-in forms, not floating fields */
+/* ── FORM FIELDS: filled-in, not floating ──────────────────────────── */
 input[type=text],textarea,.note-input{
-  border:2px solid var(--border)!important;border-radius:6px!important;
-  background:var(--surface2);
+  border:2.5px solid var(--border)!important;border-radius:7px!important;
+  background:var(--surface2);font-weight:500;
 }
 
-/* Modals: hard-edged dialog boxes */
-.modal-box,.modal-content{border:var(--bw) solid var(--border);box-shadow:6px 6px 0 var(--border)}
+/* ── MODALS + TOAST ────────────────────────────────────────────────── */
+.modal-box,.modal-content{
+  border:var(--bw) solid var(--border);box-shadow:8px 8px 0 var(--border);
+}
+.toast{
+  border:var(--bw) solid var(--border);box-shadow:4px 4px 0 var(--border);
+  font-weight:700;text-transform:uppercase;letter-spacing:.4px;
+}
 
-/* Toast: high-contrast block */
-.toast{border:var(--bw) solid var(--border);box-shadow:4px 4px 0 var(--border);font-weight:600}
+/* Motion-sensitive users get the look without the tilt. */
+@media (prefers-reduced-motion:reduce){
+  .pt h2,.ch-icon,.kpi{transform:none!important}
+}
