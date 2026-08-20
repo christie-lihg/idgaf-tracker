@@ -51,18 +51,25 @@ is doing double duty as guardrails for exactly this.
 >
 > Build two features:
 >
-> **A. Work-capacity rating.** Add a sixth daily rating alongside the existing
-> five in `WELLNESS_ITEMS` (append only): "Work capacity", 0–10, icon 💼,
-> described as "How well could you work today?". It must appear in the
-> end-of-day wellness card exactly like the others, persist to the same
-> `wellness` object, and appear in the dashboard's wellness-trends chart as a
-> sixth series using a new `--chart5` token.
+> **A. Capacity rating — "Fucks left to give".** Add a sixth daily rating
+> alongside the existing five in `WELLNESS_ITEMS` (append only). In the app UI
+> it is labelled **"Fucks left to give"**, 0–10, icon 🫠, with the prompt "How
+> many did you have left today?". It must appear in the end-of-day wellness
+> card exactly like the others, persist to the same `wellness` object, and
+> appear in the dashboard's wellness-trends chart as a sixth series using a new
+> `--chart5` token.
+>
+> **Two registers apply to this field specifically.** The playful label is for
+> the app. Anywhere the data leaves the app for a clinician — the weekly
+> summary export and any printed summary — it must be labelled **"Capacity
+> (self-rated 0–10)"**. Store one value; render two labels. Do not put the
+> playful label in the export.
 >
 > Then add a **capacity insight panel** to the dashboard: for the last 30 days,
 > compare average work capacity on days in the top third of symptom count
 > versus the bottom third, and state the difference in plain language — e.g.
-> "On your 10 worst symptom days, work capacity averaged 4.1/10 versus 7.8/10
-> on your best. That's a 47% drop." Hide the panel until there are at least 10
+> "On your 10 worst symptom days you had 4.1 out of 10 left to give,
+> versus 7.8 on your best days. That's a 47% drop." Hide the panel until there are at least 10
 > days of data, and say how many more days are needed.
 >
 > **B. JSON export and import.** Add a Data section to the History view with
@@ -91,7 +98,7 @@ is doing double duty as guardrails for exactly this.
 > doctor. See the "two registers" section in `docs/ARCHITECTURE.md`.
 >
 > Contents: date range; total days tracked; the ten most frequent symptoms with
-> counts; average energy, mood, sleep quality and work capacity; cycle dates in
+> counts; average energy, mood, sleep quality and capacity; cycle dates in
 > the period; and the user's own notes. A plain header reading "Symptom summary
 > — [date range]".
 
