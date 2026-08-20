@@ -15,7 +15,7 @@ precise prompt. Each prompt below is written to be issued once.
 
 ## Step 0 — import the repo
 
-In Emergent: connect GitHub → import `christie-lihg/symptom-tracker` → branch
+In Emergent: connect GitHub → import `christie-lihg/idgaf-tracker` → branch
 `main`.
 
 The repo already contains `docs/ARCHITECTURE.md`, which documents every
