@@ -1,7 +1,7 @@
 {
   "name": "IDGAF Tracker",
   "short_name": "IDGAF",
-  "description": "Track perimenopause symptoms, cycles and daily wellness \u2014 privately, offline, on your own device.",
+  "description": "How many fucks do you have left to give? Track perimenopause symptoms, cycles and daily capacity \u2014 privately, offline, on your own device.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
