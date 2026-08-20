@@ -43,7 +43,7 @@ function deleteDay(date,e){
   localStorage.removeItem(dayKey(date));
   localStorage.removeItem('vv_morning_'+date);
   renderHistory();
-  showToast('🗑 Day deleted');
+  showToast('🗑 Gone. Buh-bye.');
 }
 
 // ═══════════════════════════════════════════════════════════════

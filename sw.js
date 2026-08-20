@@ -7,7 +7,7 @@
  * Bump CACHE_VERSION whenever any shell file changes, or returning users will
  * keep booting the old cached build.
  */
-const CACHE_VERSION = 'idgaf-tracker-v5';
+const CACHE_VERSION = 'idgaf-tracker-v6';
 
 const SHELL = [
   './',

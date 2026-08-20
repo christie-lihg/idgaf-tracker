@@ -27,7 +27,28 @@ change. You must also replace all 46 inline handlers with `addEventListener`
 bindings, including the ones generated inside template strings in `today.js`,
 `history.js` and `cycle.js`.
 
-## Two registers: app name vs clinical export
+## Two registers: voice vs clinical output
+
+The app's **chrome** is irreverent and period-90s — toasts ("Ugh. Logged."),
+empty states ("Nada. Zip. Zilch."), button labels. `HYPE` in `js/utils.js` holds
+the rotating acknowledgements shown when a symptom is logged.
+
+Three things are **deliberately excluded** from that voice, and must stay so:
+
+1. **Symptom and wellness names** (`SYMS`, `WELLNESS_ITEMS` in `js/symptoms.js`) —
+   these are clinical vocabulary. "Vasomotor", "urinary urgency" and the rest are
+   the words a clinician recognises. Do not make them cute.
+2. **Dashboard figures and labels** — counts, averages, trends. The numbers are
+   the product.
+3. **The weekly summary export** — see below.
+
+One tone rule inside the chrome: logging a symptom is not an achievement.
+Acknowledgements commiserate ("Noted. Bogus.") rather than congratulate —
+"Booyah!" in response to a migraine reads as the app not listening. Save the
+celebratory register for things the user actually accomplished, like completing
+a check-in.
+
+## The clinical export stays plain
 
 The app is branded **IDGAF Tracker**. The weekly summary produced by
 `buildWeeklySummary()` in `js/dashboard.js` is **not** branded, and must not become

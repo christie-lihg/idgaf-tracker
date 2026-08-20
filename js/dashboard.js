@@ -254,7 +254,7 @@ function buildWeeklySummary(days,agg){
 
 function copyWeeklySummary(){
   const txt=document.getElementById('weeklySummaryText').textContent;
-  navigator.clipboard.writeText(txt).then(()=>showToast('📋 Copied to clipboard'));
+  navigator.clipboard.writeText(txt).then(()=>showToast("📋 Copied! Go show 'em."));
 }
 
 function setKpi(valId,val,trendId,cur,prv,lowerBetter){

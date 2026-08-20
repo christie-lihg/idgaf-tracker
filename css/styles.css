@@ -57,7 +57,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav);background:var(--forest);display:flex;align-items:center;padding:0 20px;box-shadow:0 2px 12px rgba(0,0,0,.18)}
 .nav-brand{display:flex;align-items:center;gap:10px;margin-right:24px}
 .nav-logo{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:15px}
-.nav-name{font-family:'Archivo Black',sans-serif;font-size:15px;font-weight:700;color:#fff;white-space:nowrap}
+.nav-name{font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#fff;white-space:nowrap}
 .nav-tabs{display:flex;gap:2px;flex:1}
 .nav-tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,.65);cursor:pointer;transition:all .15s;border:none;background:transparent;font-family:'Space Grotesk',sans-serif;white-space:nowrap}
 .nav-tab:hover{color:#fff;background:rgba(255,255,255,.1)}
@@ -75,7 +75,7 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 
 /* PAGE TITLE */
 .pt{margin-bottom:20px}
-.pt h2{font-family:'Archivo Black',sans-serif;font-size:24px;font-weight:700;color:var(--forest)}
+.pt h2{font-family:'Fredoka',sans-serif;font-size:24px;font-weight:700;color:var(--forest)}
 .pt p{font-size:13px;color:var(--muted);margin-top:3px}
 
 /* CARDS */
@@ -457,4 +457,36 @@ input[type=text],textarea,.note-input{
 /* Motion-sensitive users get the look without the tilt. */
 @media (prefers-reduced-motion:reduce){
   .pt h2,.ch-icon,.kpi{transform:none!important}
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   BEVELED CONTROLS — Windows 95 chrome inside a Memphis outline
+   The bevel is drawn with inset box-shadows rather than the classic
+   four-different-border-colours trick, so it composes with the hard black
+   outline and the offset drop shadow instead of fighting them.
+   Pressing inverts the bevel AND moves the element into its own shadow,
+   so it physically depresses.
+   ══════════════════════════════════════════════════════════════════════ */
+.btn,button.btn,.btn-primary,.nav-tab,.sym-tile,.hr-btn,.flow-btn{
+  box-shadow:
+    inset 2px 2px 0 rgba(255,255,255,.72),
+    inset -2px -2px 0 rgba(0,0,0,.26),
+    3px 3px 0 var(--border);
+}
+.btn:active,button.btn:active,.btn-primary:active,
+.nav-tab:active,.sym-tile:active,.hr-btn:active,.flow-btn:active{
+  box-shadow:
+    inset -2px -2px 0 rgba(255,255,255,.5),
+    inset 2px 2px 0 rgba(0,0,0,.3),
+    0 0 0 var(--border);
+  transform:translate(3px,3px);
+}
+/* Sleep-hour bubbles and flow buttons need the outline the bevel sits in */
+.hr-btn,.flow-btn{border:2.5px solid var(--border)!important}
+/* Already-pressed states keep the inset look so they read as "held down" */
+.nav-tab.active,.hr-btn.on,.flow-btn.on{
+  box-shadow:
+    inset -2px -2px 0 rgba(255,255,255,.45),
+    inset 2px 2px 0 rgba(0,0,0,.32),
+    2px 2px 0 var(--border);
 }

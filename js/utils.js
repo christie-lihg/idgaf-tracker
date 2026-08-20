@@ -1,3 +1,25 @@
+/* Wry 90s acknowledgements shown when a symptom is logged.
+ *
+ * Tone matters here: logging a hot flash is not an achievement, so these
+ * commiserate rather than congratulate. Nothing celebratory — "Booyah!" for
+ * a migraine reads as the app not listening.
+ *
+ * This is CHROME copy. Symptom names, the dashboard's clinical figures and
+ * the doctor-facing export stay plain — see docs/ARCHITECTURE.md.
+ */
+const HYPE = [
+  'Ugh. Logged.',
+  'Noted. Bogus.',
+  'Logged. Whatever.',
+  'On the record.',
+  'Got it. Total drag.',
+  'Logged. Talk to the hand.',
+  'Noted. Not rad.',
+  "Logged. You're not buggin'.",
+  'Got it. Rough.',
+];
+function hype(){ return HYPE[Math.floor(Math.random() * HYPE.length)] }
+
 /* Read a CSS custom property so JS-drawn things (Chart.js, the cycle
  * calendar) follow the stylesheet instead of hardcoding hex. Re-theming the
  * app is then a single edit to :root in css/styles.css.

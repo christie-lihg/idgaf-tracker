@@ -60,7 +60,7 @@ function tapSym(i){
 
   buildSymGrid(log);
   buildTimeline(log,today);
-  showToast(SYMS[i].icon+' '+SYMS[i].label+' logged');
+  showToast(SYMS[i].icon+' '+SYMS[i].label+' — '+hype());
 }
 
 function buildTimeline(log,today){
@@ -145,7 +145,7 @@ function clearToday(){
   log.events=[];
   saveDay(today,log);
   renderToday();
-  showToast('Today\'s log cleared');
+  showToast('🧹 Wiped clean. Fresh start.');
 }
 
 function saveDayNote(val){
@@ -174,7 +174,7 @@ function saveWellness(){
     if(sl)log.wellness[i]=+sl.value;
   }
   saveDay(today,log);
-  showToast('✅ Wellness ratings saved');
+  showToast("✅ Saved. You're all that.");
 }
 
 // ═══════════════════════════════════════════════════════════════
