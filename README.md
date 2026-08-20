@@ -1,6 +1,6 @@
 # 🌿 IDGAF Tracker
 
-### How many fucks do you have left to give?
+### How many f#$%s do you have left to give?
 
 A private, offline-first web app for tracking perimenopause and menopause symptoms,
 cycles, and daily capacity — and turning them into a summary you can hand to a doctor.
