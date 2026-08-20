@@ -33,6 +33,9 @@
   --chart2:#7b2ff7;   /* mood     */
   --chart3:#00B8B8;   /* sleep    */
   --chart4:#2d7ff9;   /* clarity  */
+  --chart5:#e6008a;   /* capacity — new; magenta-shifted so it reads clearly
+                        alongside chart1..4 without colliding with --rose
+                        (period flow) or --amber (hot flash trend line)   */
 
   /* Symptom-frequency heat ramp. Teal->indigo on purpose: magenta is
      reserved for period flow, so the two scales can never be confused. */
@@ -495,4 +498,33 @@ input[type=text],textarea,.note-input{
     inset -2px -2px 0 rgba(255,255,255,.45),
     inset 2px 2px 0 rgba(0,0,0,.32),
     2px 2px 0 var(--border);
+}
+
+/* ══════════════════════════════════════════════════════════════════════
+   CAPACITY INSIGHT + DATA (EXPORT/IMPORT)
+   ══════════════════════════════════════════════════════════════════════ */
+.cap-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.cap-stat{background:var(--surface2);border:var(--bw) solid var(--border);border-radius:9px;padding:14px;box-shadow:3px 3px 0 var(--border)}
+.cap-stat-worst{border-top:8px solid var(--rose)}
+.cap-stat-best{border-top:8px solid var(--chart5)}
+.cap-stat-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.cap-stat-val{font-family:'Fredoka',sans-serif;font-size:34px;font-weight:700;color:var(--forest);line-height:1;margin-top:6px}
+.cap-stat-val span{font-size:14px;color:var(--muted);font-weight:600;margin-left:3px}
+.cap-stat-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.cap-summary{font-size:13px;line-height:1.6;color:var(--text2);background:var(--mint);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;margin-top:4px}
+.cap-summary b{color:var(--forest);font-weight:700}
+.cap-note{font-size:11px;color:var(--muted);margin-top:8px;text-align:right}
+.cap-empty{display:flex;gap:14px;align-items:center;padding:6px 0}
+.cap-empty-icon{font-size:34px;flex-shrink:0}
+.cap-empty-text{font-size:13px;color:var(--text2);line-height:1.5}
+.cap-empty-text strong{color:var(--forest)}
+.cap-empty-sub{font-size:11px;color:var(--muted);margin-top:3px}
+
+.sli-hint{display:block;font-size:10px;color:var(--muted);font-weight:500;text-transform:none;letter-spacing:0;margin-top:2px}
+
+.data-actions{display:flex;gap:10px;flex-wrap:wrap}
+.data-hint{font-size:11px;color:var(--muted);margin-top:10px}
+
+@media(max-width:640px){
+  .cap-grid{grid-template-columns:1fr}
 }

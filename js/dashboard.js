@@ -71,12 +71,14 @@ function renderDashboard(){
     }
   });
 
-  // Wellness chart
+  // Wellness chart — all 6 series, capacity uses the new --chart5 token
   const wellnessDatasets=[
     {label:'Energy',color:themeColor('chart1')},
     {label:'Mood',color:themeColor('chart2')},
     {label:'Sleep',color:themeColor('chart3')},
     {label:'Clarity',color:themeColor('chart4')},
+    {label:'Hot flash',color:themeColor('amber')},
+    {label:'Capacity',color:themeColor('chart5')},
   ].map((item,i)=>({
     label:item.label,
     data:this7.map(d=>{const w=loadDay(d).wellness;return w[i]!==undefined?w[i]:null}),
@@ -137,6 +139,87 @@ function renderDashboard(){
 
   // Auto-generated summary
   buildWeeklySummary(this7,cur);
+
+  // Capacity insight (last 30 days)
+  renderCapacityInsight();
+}
+
+/* ── Capacity insight (last 30 days) ─────────────────────────────────
+ * Compare average capacity on the top third of days by symptom count
+ * against the bottom third. Requires at least 10 days with a capacity
+ * rating logged; below that we say how many more are needed.
+ * "Day" here = a calendar day in the last 30 with any wellness entry
+ * AND a capacity value (index 5) set. */
+function renderCapacityInsight(){
+  const card=document.getElementById('capacityInsightCard');
+  const body=document.getElementById('capacityInsightBody');
+  if(!card||!body)return;
+
+  const CAP_IDX=5;
+  const days=[];
+  for(let i=29;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    days.push(d.toISOString().split('T')[0]);
+  }
+  const rows=days.map(d=>{
+    const log=loadDay(d);
+    const hasWellness=Object.keys(log.wellness||{}).length>0;
+    if(!hasWellness) return null;
+    if(log.wellness[CAP_IDX]===undefined) return null;
+    return {date:d, capacity:+log.wellness[CAP_IDX], events:log.events.length};
+  }).filter(Boolean);
+
+  const MIN=10;
+  if(rows.length < MIN){
+    card.style.display='block';
+    const need=MIN-rows.length;
+    body.innerHTML=`
+      <div class="cap-empty">
+        <div class="cap-empty-icon">🫠</div>
+        <div class="cap-empty-text">
+          <strong>Log capacity ${need} more day${need!==1?'s':''}</strong> to see how it tracks with symptom load.
+          <div class="cap-empty-sub">${rows.length} of ${MIN} days logged in the last 30.</div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  // Sort by symptom count, split into thirds
+  const sorted=rows.slice().sort((a,b)=>a.events-b.events);
+  const third=Math.floor(sorted.length/3);
+  // top third = HIGHEST symptom counts (worst days)
+  const worst=sorted.slice(sorted.length-third);
+  // bottom third = LOWEST symptom counts (best days)
+  const best=sorted.slice(0,third);
+
+  const avg=arr=>arr.reduce((s,r)=>s+r.capacity,0)/arr.length;
+  const worstAvg=avg(worst);
+  const bestAvg=avg(best);
+  const diff=bestAvg-worstAvg;
+  const pct=bestAvg>0 ? Math.round((diff/bestAvg)*100) : 0;
+
+  card.style.display='block';
+  const dir = diff > 0 ? 'drop' : diff < 0 ? 'rise' : 'change';
+  const summary = diff === 0
+    ? `Your capacity holds steady across your worst and best symptom days.`
+    : `On your ${worst.length} worst symptom days you had <b>${worstAvg.toFixed(1)} out of 10</b> left to give, versus <b>${bestAvg.toFixed(1)}</b> on your best days. That's a <b>${Math.abs(pct)}% ${dir}</b>.`;
+
+  body.innerHTML=`
+    <div class="cap-grid">
+      <div class="cap-stat cap-stat-worst">
+        <div class="cap-stat-lbl">Worst symptom days</div>
+        <div class="cap-stat-val">${worstAvg.toFixed(1)}<span>/10</span></div>
+        <div class="cap-stat-sub">avg over ${worst.length} day${worst.length!==1?'s':''}</div>
+      </div>
+      <div class="cap-stat cap-stat-best">
+        <div class="cap-stat-lbl">Best symptom days</div>
+        <div class="cap-stat-val">${bestAvg.toFixed(1)}<span>/10</span></div>
+        <div class="cap-stat-sub">avg over ${best.length} day${best.length!==1?'s':''}</div>
+      </div>
+    </div>
+    <p class="cap-summary">${summary}</p>
+    <p class="cap-note">Based on ${rows.length} days with capacity logged in the last 30.</p>
+  `;
 }
 
 function aggregateWeek(days){
@@ -213,6 +296,7 @@ function buildWeeklySummary(days,agg){
   const avgE=agg.avgWellness[0]!==null?agg.avgWellness[0].toFixed(1):'not rated';
   const avgM=agg.avgWellness[1]!==null?agg.avgWellness[1].toFixed(1):'not rated';
   const avgS=agg.avgWellness[2]!==null?agg.avgWellness[2].toFixed(1):'not rated';
+  const avgCap=agg.avgWellness[5]!==null&&agg.avgWellness[5]!==undefined?agg.avgWellness[5].toFixed(1):'not rated';
 
   let text=`Week of ${weekStart} – ${weekEnd}\n\n`;
   text+=`Days tracked: ${agg.daysLogged}/7\n`;
@@ -228,6 +312,7 @@ function buildWeeklySummary(days,agg){
   text+=`  Energy: ${avgE}\n`;
   text+=`  Mood: ${avgM}\n`;
   text+=`  Sleep quality: ${avgS}\n`;
+  text+=`  ${WELLNESS_ITEMS[5].clinicalLabel}: ${avgCap}\n`;
 
   // notes from the week
   const notes=days.map(d=>({date:d,note:loadDay(d).note})).filter(x=>x.note&&x.note.trim());

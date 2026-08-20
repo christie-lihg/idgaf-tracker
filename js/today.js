@@ -156,7 +156,7 @@ function saveDayNote(val){
 }
 
 function restoreWellnessSliders(log){
-  for(let i=0;i<5;i++){
+  for(let i=0;i<WELLNESS_ITEMS.length;i++){
     const sl=document.getElementById('w'+i);
     const vl=document.getElementById('wv'+i);
     if(!sl)continue;
@@ -169,7 +169,7 @@ function restoreWellnessSliders(log){
 function saveWellness(){
   const today=todayStr();
   const log=loadDay(today);
-  for(let i=0;i<5;i++){
+  for(let i=0;i<WELLNESS_ITEMS.length;i++){
     const sl=document.getElementById('w'+i);
     if(sl)log.wellness[i]=+sl.value;
   }

@@ -26,12 +26,22 @@ const SYMS = [
   {icon:'🫸',label:'Swollen hands / feet',group:'Physical'},
 ];
 
+// ─────────────────────────────────────────────────────────────
+// WELLNESS_ITEMS is keyed by ARRAY POSITION in stored day.wellness
+// objects (e.g. `wellness: { "0": 7, "1": 5, ... }`). NEVER insert
+// or reorder — historical entries would silently relabel. APPEND ONLY.
+//
+// `clinicalLabel` is used ONLY for clinician-facing output (weekly
+// summary export, printed summaries). The playful `label` is app UI.
+// One value stored, two labels rendered — see docs/ARCHITECTURE.md.
+// ─────────────────────────────────────────────────────────────
 const WELLNESS_ITEMS = [
-  {label:'Energy',icon:'🔆'},
-  {label:'Mood',icon:'💭'},
-  {label:'Sleep Quality',icon:'😴'},
-  {label:'Brain Clarity',icon:'🧠'},
-  {label:'Hot Flash Severity',icon:'🔥'},
+  {label:'Energy',              icon:'🔆', clinicalLabel:'Energy'},
+  {label:'Mood',                icon:'💭', clinicalLabel:'Mood'},
+  {label:'Sleep Quality',       icon:'😴', clinicalLabel:'Sleep quality'},
+  {label:'Brain Clarity',       icon:'🧠', clinicalLabel:'Brain clarity'},
+  {label:'Hot Flash Severity',  icon:'🔥', clinicalLabel:'Hot flash severity'},
+  {label:'Fucks left to give',  icon:'🫠', clinicalLabel:'Capacity (self-rated 0–10)', prompt:'How many did you have left today?'},
 ];
 
 // ═══════════════════════════════════════════════════════════════

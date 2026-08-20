@@ -43,6 +43,7 @@
 <script defer src="js/past-day-modal.js"></script>
 <script defer src="js/cycle.js"></script>
 <script defer src="js/import-health.js"></script>
+<script defer src="js/data-io.js"></script>
 <script defer src="js/init.js"></script>
 <script defer src="js/register-sw.js"></script>
 </head>
@@ -104,7 +105,7 @@
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost btn-sm" onclick="closePastModal()">Cancel</button>
-      <button class="btn btn-primary btn-sm" onclick="savePastDay()">Save</button>
+      <button class="btn btn-primary btn-sm" data-testid="save-past-day-btn" onclick="savePastDay()">Save</button>
     </div>
   </div>
 </div>
@@ -130,7 +131,7 @@
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost btn-sm" onclick="closePeriodModal()">Cancel</button>
-      <button class="btn btn-primary btn-sm" onclick="savePeriodDay()">Save</button>
+      <button class="btn btn-primary btn-sm" data-testid="save-period-btn" onclick="savePeriodDay()">Save</button>
     </div>
   </div>
 </div>
@@ -215,7 +216,7 @@
     <div class="ch">
       <div class="ch-icon">🌡</div>
       <div><h3>End-of-day wellness (optional)</h3><p>0 = worst · 10 = best</p></div>
-      <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="saveWellness()">Save</button>
+      <button class="btn btn-ghost btn-sm" style="margin-left:auto" data-testid="save-wellness-btn" onclick="saveWellness()">Save</button>
     </div>
     <div class="cb">
       <div class="sli-row">
@@ -242,6 +243,11 @@
         <div class="sli-lbl">🔥 Hot Flash Severity</div>
         <input type="range" class="sli" id="w4" min="0" max="10" value="5" oninput="document.getElementById('wv4').textContent=this.value">
         <div class="sli-val" id="wv4">5</div>
+      </div>
+      <div class="sli-row" title="How many did you have left today?">
+        <div class="sli-lbl">🫠 Fucks left to give<span class="sli-hint">How many did you have left today?</span></div>
+        <input type="range" class="sli" id="w5" min="0" max="10" value="5" oninput="document.getElementById('wv5').textContent=this.value">
+        <div class="sli-val" id="wv5">5</div>
       </div>
     </div>
   </div>
@@ -359,6 +365,15 @@
       </div>
     </div>
 
+    <!-- Capacity insight (30-day) -->
+    <div class="card" id="capacityInsightCard" style="display:none">
+      <div class="ch">
+        <div class="ch-icon">🫠</div>
+        <div><h3>Capacity insight</h3><p>How much you had left on your worst days versus your best</p></div>
+      </div>
+      <div class="cb" id="capacityInsightBody"></div>
+    </div>
+
     <!-- Top symptoms this week -->
     <div class="card">
       <div class="ch"><div class="ch-icon">🔝</div><div><h3>Most frequent this week</h3><p>Ranked by number of logged events</p></div></div>
@@ -393,6 +408,22 @@
     <button class="btn btn-primary btn-sm" onclick="openPastModal()">+ Log past day</button>
   </div>
   <div class="card"><div class="cb" id="historyList"></div></div>
+
+  <!-- ── DATA (export / import) ── -->
+  <div class="card">
+    <div class="ch">
+      <div class="ch-icon">💾</div>
+      <div><h3>Data</h3><p>Export every log to a JSON file, or import one back in</p></div>
+    </div>
+    <div class="cb">
+      <div class="data-actions">
+        <button class="btn btn-primary btn-sm" data-testid="export-data-btn" onclick="exportAllData()">⬇ Export all data</button>
+        <button class="btn btn-ghost btn-sm" data-testid="import-data-btn" onclick="triggerImportData()">⬆ Import data</button>
+        <input type="file" id="importFileInput" data-testid="import-file-input" accept="application/json,.json" style="display:none" onchange="handleImportFile(event)">
+      </div>
+      <p class="data-hint">Everything stays on this device. Nothing gets uploaded.</p>
+    </div>
+  </div>
 </div>
 </div>
 
