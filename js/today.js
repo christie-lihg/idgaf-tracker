@@ -174,7 +174,7 @@ function saveWellness(){
     if(sl)log.wellness[i]=+sl.value;
   }
   saveDay(today,log);
-  showToast("✅ Saved. You're all that.");
+  showToast(WELLNESS_SAVED());
 }
 
 // ═══════════════════════════════════════════════════════════════

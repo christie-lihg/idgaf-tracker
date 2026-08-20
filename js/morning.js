@@ -111,7 +111,7 @@ function saveMorning(){
   const data={checked,sleepHours,sleepQuality,note,savedAt:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',hour12:true})};
   saveMorningData(today,data);
   updateMorningCardState(data);
-  showToast('🌅 Morning logged. Fresh.');
+  showToast(MORNING_SAVED());
   const log=loadDay(today);
   buildTimeline(log,today);
 }
