@@ -1,0 +1,14 @@
+{
+  "name": "idgaf-tracker",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static PWA. `yarn start` serves the app on port 3000 with caching disabled (same behaviour as serve.py in dev). Production deployment uses `serve` from the dependencies below.",
+  "scripts": {
+    "start": "serve -s . -l tcp://0.0.0.0:3000 --no-clipboard --no-request-logging",
+    "build": "echo 'No build step — this is a static PWA served as-is.'",
+    "test": "echo 'No automated tests — see docs/ARCHITECTURE.md for manual testing.'"
+  },
+  "dependencies": {
+    "serve": "14.2.4"
+  }
+}

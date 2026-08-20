@@ -1,0 +1,41 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "env": {
+    "browser": true,
+    "es2022": true,
+    "serviceworker": true
+  },
+  "globals": {
+    "Chart": "readonly",
+
+    "STORE_PREFIX": "readonly",
+    "loadDay": "readonly",
+    "saveDay": "readonly",
+    "loadMorning": "readonly",
+    "saveMorningData": "readonly",
+    "allDays": "readonly",
+    "migrateLegacyKeys": "readonly",
+    "importHistoricalPeriodData": "readonly",
+
+    "SYMS": "readonly",
+    "WELLNESS_ITEMS": "readonly",
+    "OVERNIGHT_ITEMS": "readonly",
+
+    "todayStr": "readonly",
+    "dayKey": "readonly",
+    "fmtFull": "readonly",
+    "themeColor": "readonly",
+    "showToast": "readonly",
+    "hype": "readonly",
+    "WELLNESS_SAVED": "readonly",
+
+    "renderToday": "readonly",
+    "renderHistory": "readonly",
+    "renderDashboard": "readonly",
+    "buildMorningCard": "readonly",
+    "showView": "readonly",
+    "closePastModal": "readonly",
+    "closePeriodModal": "readonly",
+    "charts": "readonly"
+  }
+}

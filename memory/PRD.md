@@ -26,6 +26,20 @@ clear error rather than throwing.
 - All colour lives in `:root` in `css/styles.css`. JS uses `themeColor()` from `js/utils.js`.
 - Every new shell file must be added to `SHELL` in `sw.js` and `CACHE_VERSION` bumped.
 
+## Deployment Layout (2026-01)
+Deployment failed on first attempt with `read env file backend/.env: no such
+file or directory`. Restructured into the standard Emergent layout:
+
+- **`/app/frontend/`** — static PWA moved here. `package.json` uses `serve` to
+  serve `index.html` on port 3000 (`serve -s . -l tcp://0.0.0.0:3000
+  --no-clipboard --no-request-logging`). `.env` holds `REACT_APP_BACKEND_URL`.
+- **`/app/backend/`** — minimal FastAPI on port 8001 exposing only
+  `/api/health`. Does NOT touch MongoDB. Exists solely so the platform's
+  build/health-check steps succeed. Anyone adding endpoints that persist
+  symptom data here is violating the local-only guarantee documented in
+  `docs/ARCHITECTURE.md`.
+- Supervisor now reports both services RUNNING. deployment_agent status: **pass**.
+
 ## What's Been Implemented (2026-01)
 ### Feature A — Capacity rating
 - **`js/symptoms.js`**: appended `{label:'Fucks left to give', icon:'🫠', clinicalLabel:'Capacity (self-rated 0–10)', prompt:'…'}` as `WELLNESS_ITEMS[5]`. Existing 5 entries unchanged.
