@@ -165,7 +165,7 @@ function savePeriodDay(){
   document.getElementById('csCycleLen').textContent=stats.avgCycle?stats.avgCycle+'d':'—';
   document.getElementById('csPeriodLen').textContent=stats.avgPeriod?stats.avgPeriod+'d':'—';
   document.getElementById('csLastPeriod').textContent=stats.lastStart?fmtShort(stats.lastStart):'—';
-  showToast('🩸 Logged. Word.');
+  showToast('🩸 On the calendar.');
 }
 
 // Dashboard cycle strip for current week

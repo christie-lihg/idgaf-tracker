@@ -17,6 +17,12 @@
  * A shuffle bag guarantees every line appears once before any line repeats,
  * and the seam check stops the tail of one bag butting up against the head of
  * the next.
+ *
+ * Rotation is only half of it. An earlier version rotated perfectly but 11 of
+ * 18 lines opened with 'Noted.' or 'Logged.', so the first word you read was
+ * the same most of the time and it still felt repetitive. Keep the OPENING
+ * WORDS varied, not just the lines. And skip the acknowledgement verb entirely:
+ * the toast appearing IS the acknowledgement, and it already names the symptom.
  */
 function makeRotator(items){
   let bag = [], last = null;
@@ -35,41 +41,42 @@ function makeRotator(items){
 }
 
 const HYPE = [
-  'Ugh. Logged.',
-  'Noted. Bogus.',
-  'Logged. Whatever.',
-  'On the record.',
-  'Got it. Total drag.',
-  'Logged. Talk to the hand.',
-  'Noted. Not rad.',
-  "Logged. You're not buggin'.",
-  'Got it. Rough.',
-  'Logged. That blows.',
-  'Noted. Harsh.',
-  'Got it. So not fresh.',
-  'On the list. Lame.',
-  'Noted. Gnarly.',
-  "Got it. That's wack.",
-  'Logged. Hang in there.',
-  'Noted. Word.',
-  'Got it. Blergh.',
+  'Bogus.',
+  'Total drag.',
+  'Bunk.',
+  'Weak sauce.',
+  'Harsh.',
+  'Not rad.',
+  'Wack.',
+  'Major bummer.',
+  'Lame.',
+  'Gnarly.',
+  'That bites.',
+  'Rough one.',
+  'Ugh, again?',
+  'So not fresh.',
+  'Talk to the hand.',
+  'Hang in there.',
+  'As if you needed that.',
+  'Blergh.',
 ];
 const hype = makeRotator(HYPE);
 
-/* Saves ARE accomplishments, so these get the upbeat register. */
+/* Saves ARE accomplishments, so these get the upbeat register. Heads vary
+   here too — the ✅ already signals "it saved", so the words don't have to. */
 const MORNING_SAVED = makeRotator([
-  '🌅 Morning logged. Fresh.',
-  '🌅 Locked in. Nice.',
   '🌅 Done and done.',
+  '🌅 Locked in. Nice.',
   '🌅 Morning: handled.',
-  '🌅 Logged it. Word.',
+  '🌅 All set. Fresh.',
+  '🌅 Nice work.',
 ]);
 const WELLNESS_SAVED = makeRotator([
-  "✅ Saved. You're all that.",
-  '✅ Saved. And a bag of chips.',
+  "✅ You're all that.",
+  '✅ All that and a bag of chips.',
   '✅ Locked in. Word.',
-  '✅ Saved. Da bomb.',
-  '✅ Got it. Sweet.',
+  '✅ Da bomb.',
+  '✅ Sweet.',
 ]);
 
 
