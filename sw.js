@@ -7,7 +7,7 @@
  * Bump CACHE_VERSION whenever any shell file changes, or returning users will
  * keep booting the old cached build.
  */
-const CACHE_VERSION = 'idgaf-tracker-v6';
+const CACHE_VERSION = 'idgaf-tracker-v9';
 
 const SHELL = [
   './',
@@ -15,6 +15,7 @@ const SHELL = [
   './manifest.webmanifest',
   './css/styles.css',
   './css/memphis-tile.svg',
+  './css/memphis-tile-b.svg',
   './vendor/chart.umd.min.js',
   './js/symptoms.js',
   './js/storage.js',
@@ -52,6 +53,21 @@ self.addEventListener('activate', (e) => {
   );
 });
 
+/* On localhost we flip to NETWORK-FIRST.
+ *
+ * Cache-first is right in production — the app should open instantly and work
+ * with no connection. But during development it means every edit you make is
+ * invisible until you manually purge the cache, and the failure does not look
+ * like caching: buttons stop responding, styles do not update, and a half-stale
+ * mix of old and new files throws ReferenceErrors on click. That cost real
+ * debugging time more than once.
+ *
+ * Network-first on localhost keeps offline support testable (the cache is still
+ * populated and still used when the network fails) while guaranteeing that a
+ * running dev server always wins.
+ */
+const DEV = ['localhost', '127.0.0.1', '[::1]'].includes(self.location.hostname);
+
 self.addEventListener('fetch', (e) => {
   const { request } = e;
   if (request.method !== 'GET') return;
@@ -59,7 +75,20 @@ self.addEventListener('fetch', (e) => {
   const sameOrigin = new URL(request.url).origin === self.location.origin;
 
   if (sameOrigin) {
-    // App shell: cache-first, revalidate in the background.
+    if (DEV) {
+      // Dev: network first, fall back to cache only when offline.
+      e.respondWith(
+        fetch(request).then((res) => {
+          if (res && res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE_VERSION).then((c) => c.put(request, copy));
+          }
+          return res;
+        }).catch(() => caches.match(request))
+      );
+      return;
+    }
+    // Production: cache-first, revalidate in the background.
     e.respondWith(
       caches.match(request).then((hit) => {
         const net = fetch(request).then((res) => {

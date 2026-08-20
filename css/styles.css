@@ -339,9 +339,14 @@ body{background-color:var(--bg)}
    gutters instead of behind the content column. */
 body::before{
   content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:url('memphis-tile.svg') repeat;
-  background-size:560px 560px;
-  opacity:.5;
+  /* Two tiles at coprime-ish sizes (560 / 670) and offset origins. A single
+     repeating tile reads as wallpaper — the eye finds the grid within about
+     two repeats. Layered like this the combined period is ~37,520px, which
+     is far past any screen, so it reads as scattered rather than tiled. */
+  background:
+    url('memphis-tile.svg')   0     0     / 560px 560px repeat,
+    url('memphis-tile-b.svg') 190px 260px / 670px 670px repeat;
+  opacity:.45;
 }
 .view{position:relative;z-index:1}
 
@@ -467,14 +472,14 @@ input[type=text],textarea,.note-input{
    Pressing inverts the bevel AND moves the element into its own shadow,
    so it physically depresses.
    ══════════════════════════════════════════════════════════════════════ */
-.btn,button.btn,.btn-primary,.nav-tab,.sym-tile,.hr-btn,.flow-btn{
+.btn,button.btn,.btn-primary,.nav-tab,.sym-tile,.sh-btn,.flow-btn{
   box-shadow:
     inset 2px 2px 0 rgba(255,255,255,.72),
     inset -2px -2px 0 rgba(0,0,0,.26),
     3px 3px 0 var(--border);
 }
 .btn:active,button.btn:active,.btn-primary:active,
-.nav-tab:active,.sym-tile:active,.hr-btn:active,.flow-btn:active{
+.nav-tab:active,.sym-tile:active,.sh-btn:active,.flow-btn:active{
   box-shadow:
     inset -2px -2px 0 rgba(255,255,255,.5),
     inset 2px 2px 0 rgba(0,0,0,.3),
@@ -482,9 +487,10 @@ input[type=text],textarea,.note-input{
   transform:translate(3px,3px);
 }
 /* Sleep-hour bubbles and flow buttons need the outline the bevel sits in */
-.hr-btn,.flow-btn{border:2.5px solid var(--border)!important}
+.sh-btn{border:2px solid var(--border)!important}
+.flow-btn{border:2.5px solid var(--border)!important}
 /* Already-pressed states keep the inset look so they read as "held down" */
-.nav-tab.active,.hr-btn.on,.flow-btn.on{
+.nav-tab.active,.sh-btn.on,.flow-btn.on{
   box-shadow:
     inset -2px -2px 0 rgba(255,255,255,.45),
     inset 2px 2px 0 rgba(0,0,0,.32),

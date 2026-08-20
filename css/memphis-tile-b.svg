@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="670" height="670" viewBox="0 0 670 670">
+  <!-- Second confetti tile, layered under tile A at a different scale.
+       A single tile repeating at one size reads unmistakably as wallpaper —
+       the eye locks onto the grid within about two repeats. Two tiles at
+       coprime-ish sizes (560 / 670) push the combined repeat period out far
+       enough that it stops reading as a pattern.
+
+       Deliberately different vocabulary from tile A: arcs, crosses, outlined
+       triangles, dashes. If both tiles carried the same shapes the layering
+       would just look denser, not more random. -->
+
+  <!-- long sweeping arcs -->
+  <path d="M40 500 q90-120 180 0" fill="none" stroke="#7B2FF7" stroke-width="8" stroke-linecap="round"/>
+  <path d="M430 96 q70-90 140 0" fill="none" stroke="#FFC42E" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- crosses / plus marks -->
+  <g stroke="#FF2D78" stroke-width="7" stroke-linecap="round">
+    <line x1="120" y1="120" x2="120" y2="164"/><line x1="98" y1="142" x2="142" y2="142"/>
+  </g>
+  <g stroke="#00D9D9" stroke-width="7" stroke-linecap="round">
+    <line x1="560" y1="420" x2="560" y2="464"/><line x1="538" y1="442" x2="582" y2="442"/>
+  </g>
+  <g stroke="#7B2FF7" stroke-width="6" stroke-linecap="round">
+    <line x1="300" y1="600" x2="300" y2="636"/><line x1="282" y1="618" x2="318" y2="618"/>
+  </g>
+
+  <!-- outlined triangles (tile A uses solid ones) -->
+  <polygon points="470,250 500,304 440,304" fill="none" stroke="#FF2D78" stroke-width="6"
+           transform="rotate(-16 470 277)"/>
+  <polygon points="180,330 206,376 154,376" fill="none" stroke="#00D9D9" stroke-width="6"
+           transform="rotate(26 180 353)"/>
+
+  <!-- dashed run -->
+  <line x1="360" y1="180" x2="470" y2="180" stroke="#00D9D9" stroke-width="7"
+        stroke-linecap="round" stroke-dasharray="4 22"/>
+  <line x1="70" y1="250" x2="170" y2="250" stroke="#FFC42E" stroke-width="7"
+        stroke-linecap="round" stroke-dasharray="4 22"/>
+
+  <!-- half-circles -->
+  <path d="M600 610 a26 26 0 0 1 52 0 z" fill="#FFC42E"/>
+  <path d="M240 60 a22 22 0 0 1 44 0 z" fill="#00D9D9" transform="rotate(180 262 60)"/>
+
+  <!-- scattered dots -->
+  <circle cx="620" cy="180" r="8" fill="#FF2D78"/>
+  <circle cx="60"  cy="620" r="7" fill="#00D9D9"/>
+  <circle cx="400" cy="450" r="7" fill="#FFC42E"/>
+  <circle cx="520" cy="40"  r="6" fill="#7B2FF7"/>
+</svg>
