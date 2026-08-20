@@ -69,13 +69,18 @@ This is health data, so the architecture is the privacy policy:
 
 ## Running it
 
-No build step, no dependencies to install. Any static file server works:
+No build step, no dependencies to install:
 
 ```bash
-python3 -m http.server 8137
+python3 serve.py
 ```
 
 Then open <http://localhost:8137>.
+
+Use `serve.py` rather than `python3 -m http.server`. The stdlib server sends no
+`Cache-Control` header, so browsers apply *heuristic* caching and silently serve
+stale CSS and JS — which does not look like a caching problem, it looks like your
+edit did not work. `serve.py` is the same server with caching switched off.
 
 You need a real server rather than opening `index.html` directly — service workers
 require a secure context, so `file://` will load the app but not the offline mode.

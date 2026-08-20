@@ -101,7 +101,7 @@ function closePastModal(){
 
 function savePastDay(){
   const date=document.getElementById('pastDate').value;
-  if(!date){showToast('Pick a date first');return;}
+  if(!date){showToast('Pick a date first. Duh.');return;}
 
   // overnight
   const checked=[];
@@ -132,7 +132,7 @@ function savePastDay(){
   saveDay(date,{events,wellness,note});
   closePastModal();
   renderHistory();
-  showToast('✅ Past day saved');
+  showToast('✅ Backfilled. Nice save.');
 }
 
 // ═══════════════════════════════════════════════════════════════

@@ -57,14 +57,14 @@ function renderDashboard(){
       labels:dayLabels,
       datasets:[{
         label:'Events',data:dayCounts,
-        backgroundColor:dayCounts.map(v=>v===0?'rgba(221,232,213,.5)':v<3?'rgba(106,158,74,.6)':v<6?'rgba(74,124,47,.75)':'rgba(45,80,22,.85)'),
+        backgroundColor:dayCounts.map(v=>v===0?themeColor('mint',.9):v<3?themeColor('leaf',.75):v<6?themeColor('sage',.85):themeColor('forest',.9)),
         borderRadius:5
       }]
     },
     options:{
       plugins:{legend:{display:false}},
       scales:{
-        y:{min:0,suggestedMax:8,grid:{color:'#edf4e5'},ticks:{font:{size:10}}},
+        y:{min:0,suggestedMax:8,grid:{color:themeColor('mint')},ticks:{font:{size:10}}},
         x:{grid:{display:false},ticks:{font:{size:11}}}
       },
       animation:{duration:500},responsive:true,maintainAspectRatio:false
@@ -73,10 +73,10 @@ function renderDashboard(){
 
   // Wellness chart
   const wellnessDatasets=[
-    {label:'Energy',color:'#e67e22'},
-    {label:'Mood',color:'#7b5ea7'},
-    {label:'Sleep',color:'#4a7c2f'},
-    {label:'Clarity',color:'#2d9cdb'},
+    {label:'Energy',color:themeColor('chart1')},
+    {label:'Mood',color:themeColor('chart2')},
+    {label:'Sleep',color:themeColor('chart3')},
+    {label:'Clarity',color:themeColor('chart4')},
   ].map((item,i)=>({
     label:item.label,
     data:this7.map(d=>{const w=loadDay(d).wellness;return w[i]!==undefined?w[i]:null}),
@@ -91,7 +91,7 @@ function renderDashboard(){
     options:{
       plugins:{legend:{labels:{font:{size:10},boxWidth:10}}},
       scales:{
-        y:{min:0,max:10,grid:{color:'#edf4e5'},ticks:{font:{size:10}}},
+        y:{min:0,max:10,grid:{color:themeColor('mint')},ticks:{font:{size:10}}},
         x:{grid:{display:false},ticks:{font:{size:11}}}
       },
       animation:{duration:500},responsive:true,maintainAspectRatio:false
@@ -124,11 +124,11 @@ function renderDashboard(){
   dc('chartTOD');
   charts.tod=new Chart(document.getElementById('chartTOD'),{
     type:'bar',
-    data:{labels:todLabels,datasets:[{label:'Events',data:hourBuckets,backgroundColor:'rgba(45,80,22,.55)',borderRadius:3}]},
+    data:{labels:todLabels,datasets:[{label:'Events',data:hourBuckets,backgroundColor:themeColor('sage',.75),borderRadius:3}]},
     options:{
       plugins:{legend:{display:false}},
       scales:{
-        y:{min:0,grid:{color:'#edf4e5'},ticks:{font:{size:9}}},
+        y:{min:0,grid:{color:themeColor('mint')},ticks:{font:{size:9}}},
         x:{grid:{display:false},ticks:{font:{size:9}}}
       },
       animation:{duration:500},responsive:true,maintainAspectRatio:false
@@ -254,7 +254,7 @@ function buildWeeklySummary(days,agg){
 
 function copyWeeklySummary(){
   const txt=document.getElementById('weeklySummaryText').textContent;
-  navigator.clipboard.writeText(txt).then(()=>showToast('📋 Copied to clipboard'));
+  navigator.clipboard.writeText(txt).then(()=>showToast("📋 Copied! Go show 'em."));
 }
 
 function setKpi(valId,val,trendId,cur,prv,lowerBetter){

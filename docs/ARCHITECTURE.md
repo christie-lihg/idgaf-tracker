@@ -27,7 +27,28 @@ change. You must also replace all 46 inline handlers with `addEventListener`
 bindings, including the ones generated inside template strings in `today.js`,
 `history.js` and `cycle.js`.
 
-## Two registers: app name vs clinical export
+## Two registers: voice vs clinical output
+
+The app's **chrome** is irreverent and period-90s — toasts ("Ugh. Logged."),
+empty states ("Nada. Zip. Zilch."), button labels. `HYPE` in `js/utils.js` holds
+the rotating acknowledgements shown when a symptom is logged.
+
+Three things are **deliberately excluded** from that voice, and must stay so:
+
+1. **Symptom and wellness names** (`SYMS`, `WELLNESS_ITEMS` in `js/symptoms.js`) —
+   these are clinical vocabulary. "Vasomotor", "urinary urgency" and the rest are
+   the words a clinician recognises. Do not make them cute.
+2. **Dashboard figures and labels** — counts, averages, trends. The numbers are
+   the product.
+3. **The weekly summary export** — see below.
+
+One tone rule inside the chrome: logging a symptom is not an achievement.
+Acknowledgements commiserate ("Noted. Bogus.") rather than congratulate —
+"Booyah!" in response to a migraine reads as the app not listening. Save the
+celebratory register for things the user actually accomplished, like completing
+a check-in.
+
+## The clinical export stays plain
 
 The app is branded **IDGAF Tracker**. The weekly summary produced by
 `buildWeeklySummary()` in `js/dashboard.js` is **not** branded, and must not become
@@ -101,6 +122,31 @@ key when flow is `'none'` rather than storing it — so absence is meaningful, a
   users keep booting the old cached build and will not see your change.
 - **Add new files to the `SHELL` array.** A new `js/` file that is not listed will
   work online and 404 offline — which you will not notice in normal development.
+
+### While developing, the cache will lie to you
+
+This bites during any edit session, and it does not look like a caching problem —
+it looks like your change did not work. You edit `css/styles.css`, reload, and see
+the old styling, because the worker serves its cached copy first.
+
+Before concluding an edit failed, check whether the browser is even using it:
+
+```js
+// does the running page have the new token, and what is on disk?
+getComputedStyle(document.documentElement).getPropertyValue('--heat1')   // '' = stale
+await (await fetch('css/styles.css', {cache:'reload'})).text()           // the real file
+```
+
+If the token is empty but the fetched file contains it, you are looking at cache,
+not a bug. Clear it with:
+
+```js
+navigator.serviceWorker.getRegistrations().then(rs => rs.forEach(r => r.unregister()));
+caches.keys().then(ks => ks.forEach(k => caches.delete(k)));
+```
+
+then reload. Or tick **Application → Service Workers → Bypass for network** in
+DevTools for the session.
 
 Cross-origin requests (Google Fonts) use network-first with a cache fallback, and the
 CSS declares system-font fallbacks, so a font failure degrades quietly.

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="440" viewBox="0 0 440 440">
+  <!-- Saved-by-the-Bell / Memphis Milano confetti tile.
+       Deliberately scattered rather than gridded, and it tiles seamlessly
+       because every shape sits well inside the bounds. Shapes are bold and
+       large: the previous version used small faint dots and read as
+       "modern app with bright colours" rather than 1990. -->
+
+  <!-- squiggles -->
+  <path d="M28 62 q18-22 36 0 t36 0 t36 0" fill="none" stroke="#00D9D9" stroke-width="7" stroke-linecap="round"/>
+  <path d="M262 344 q16-20 32 0 t32 0 t32 0" fill="none" stroke="#FF2D78" stroke-width="7" stroke-linecap="round"/>
+  <path d="M330 118 q14 18 28 0 t28 0" fill="none" stroke="#7B2FF7" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- zigzags / lightning -->
+  <polyline points="60,250 82,214 104,250 126,214 148,250" fill="none" stroke="#FFC42E" stroke-width="7"
+            stroke-linejoin="round" stroke-linecap="round"/>
+  <polyline points="300,44 318,18 336,44 354,18" fill="none" stroke="#00D9D9" stroke-width="6"
+            stroke-linejoin="round" stroke-linecap="round"/>
+
+  <!-- solid triangles, tilted -->
+  <polygon points="196,96 226,150 166,150" fill="#FF2D78" transform="rotate(18 196 123)"/>
+  <polygon points="392,236 416,278 368,278" fill="#FFC42E" transform="rotate(-24 392 257)"/>
+  <polygon points="96,380 118,418 74,418" fill="#7B2FF7" transform="rotate(12 96 399)"/>
+
+  <!-- circles: one solid, some outlined -->
+  <circle cx="252" cy="212" r="17" fill="#00D9D9"/>
+  <circle cx="60" cy="150" r="14" fill="none" stroke="#FF2D78" stroke-width="6"/>
+  <circle cx="382" cy="392" r="15" fill="none" stroke="#00D9D9" stroke-width="6"/>
+  <circle cx="150" cy="308" r="10" fill="#FFC42E"/>
+
+  <!-- confetti bars at angles -->
+  <rect x="336" y="164" width="34" height="10" rx="5" fill="#FF2D78" transform="rotate(38 353 169)"/>
+  <rect x="18" y="330" width="30" height="10" rx="5" fill="#00D9D9" transform="rotate(-28 33 335)"/>
+  <rect x="214" y="404" width="32" height="10" rx="5" fill="#7B2FF7" transform="rotate(20 230 409)"/>
+  <rect x="418" y="70" width="28" height="9"  rx="4" fill="#FFC42E" transform="rotate(-42 432 74)"/>
+
+  <!-- small dots -->
+  <circle cx="124" cy="180" r="6" fill="#7B2FF7"/>
+  <circle cx="290" cy="286" r="6" fill="#FFC42E"/>
+  <circle cx="200" cy="26"  r="6" fill="#FF2D78"/>
+  <circle cx="44"  cy="420" r="6" fill="#00D9D9"/>
+</svg>
