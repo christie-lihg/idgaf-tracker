@@ -77,10 +77,22 @@ must stay last.
 
 ## Data model
 
-Everything lives in `localStorage` under three key prefixes. **Do not rename these
-keys** — users have real history under them, and a rename is a silent data loss.
+Everything lives in `localStorage` under three key families, all prefixed
+`STORE_PREFIX` (`idgaf_`) from `js/storage.js`. **Do not rename these keys.**
+Users have real history under them and a rename is silent data loss.
 
-### `vv_day_YYYY-MM-DD`
+They were originally `vv_`, a prefix inherited from an unrelated project.
+`migrateLegacyKeys()` handles the rename: it runs once from `js/init.js` before
+the first render, copies the legacy keys across, and is deliberately
+non-destructive — originals are kept as a backup, existing `idgaf_*` keys are
+never overwritten, and it is idempotent via a completion marker.
+
+If you ever need to do this again, note the one non-obvious rule: it migrates an
+explicit list of key families this app owns, **not** everything matching the old
+prefix. A blanket prefix copy would pull an unrelated project's keys into this
+app's storage if the two ever shared an origin. Enumerate what you own.
+
+### `idgaf_day_YYYY-MM-DD`
 
 ```jsonc
 {
@@ -100,11 +112,11 @@ keys** — users have real history under them, and a rename is a silent data los
 > **append** to `SYMS`. If you must remove a symptom, tombstone it rather than
 > splicing it out.
 
-### `vv_morning_YYYY-MM-DD`
+### `idgaf_morning_YYYY-MM-DD`
 
 The morning check-in: overnight symptom flags, sleep hours, sleep quality, note.
 
-### `vv_period_YYYY-MM-DD`
+### `idgaf_period_YYYY-MM-DD`
 
 ```jsonc
 { "flow": "light" | "medium" | "heavy", "note": "" }

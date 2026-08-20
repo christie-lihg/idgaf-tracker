@@ -1,6 +1,6 @@
 // PERIOD / CYCLE TRACKING
 // ═══════════════════════════════════════════════════════════════
-function periodKey(d){ return 'vv_period_'+d }
+function periodKey(d){ return STORE_PREFIX+'period_'+d }
 
 function loadPeriodDay(d){
   try{ return JSON.parse(localStorage.getItem(periodKey(d))||'null') }
@@ -16,7 +16,7 @@ function allPeriodDates(){
   const dates=[];
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    if(k&&k.startsWith('vv_period_'))dates.push(k.replace('vv_period_',''));
+    if(k&&k.startsWith(STORE_PREFIX+'period_'))dates.push(k.replace(STORE_PREFIX+'period_',''));
   }
   return dates.sort();
 }

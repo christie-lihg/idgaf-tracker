@@ -17,10 +17,10 @@ const OVERNIGHT_ITEMS = [
 ];
 
 function loadMorning(d){
-  try{ return JSON.parse(localStorage.getItem('vv_morning_'+(d||todayStr()))||'null') }
+  try{ return JSON.parse(localStorage.getItem(STORE_PREFIX+'morning_'+(d||todayStr()))||'null') }
   catch{ return null }
 }
-function saveMorningData(d,data){ localStorage.setItem('vv_morning_'+(d||todayStr()),JSON.stringify(data)) }
+function saveMorningData(d,data){ localStorage.setItem(STORE_PREFIX+'morning_'+(d||todayStr()),JSON.stringify(data)) }
 
 function buildMorningCard(){
   const today=todayStr();

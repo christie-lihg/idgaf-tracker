@@ -41,7 +41,7 @@ function deleteDay(date,e){
   e.stopPropagation();
   if(!confirm(`Delete the log for ${fmtFull(date)}?`))return;
   localStorage.removeItem(dayKey(date));
-  localStorage.removeItem('vv_morning_'+date);
+  localStorage.removeItem(STORE_PREFIX+'morning_'+date);
   renderHistory();
   showToast('🗑 Gone. Buh-bye.');
 }

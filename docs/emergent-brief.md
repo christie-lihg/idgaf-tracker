@@ -36,8 +36,9 @@ is doing double duty as guardrails for exactly this.
 >    add `type="module"`. The markup uses 46 inline `onclick=`/`oninput=`
 >    handlers that resolve against global scope; modules break every button in
 >    the app at click time, with no error on load.
-> 2. Do not rename the localStorage keys (`vv_day_*`, `vv_morning_*`,
->    `vv_period_*`). Real history exists under them.
+> 2. Do not rename the localStorage keys (`idgaf_day_*`, `idgaf_morning_*`,
+>    `idgaf_period_*`), and do not remove `migrateLegacyKeys()` in
+>    `js/storage.js` — it carries users forward from the old `vv_` prefix.
 > 3. `SYMS` and `WELLNESS_ITEMS` in `js/symptoms.js` are keyed by **array
 >    position** in stored entries. Only ever **append**. Inserting or reordering
 >    silently relabels every historical entry.
@@ -66,7 +67,7 @@ is doing double duty as guardrails for exactly this.
 >
 > **B. JSON export and import.** Add a Data section to the History view with
 > "Export all data" and "Import data" buttons. Export downloads a single JSON
-> file containing every `vv_*` key, plus a schema version and export date,
+> file containing every `idgaf_*` key, plus a schema version and export date,
 > named `idgaf-tracker-YYYY-MM-DD.json`. Import accepts that file, shows a
 > confirmation naming how many days it will add and how many existing days it
 > will overwrite, and only proceeds on confirm. Never wipe existing data
