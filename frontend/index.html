@@ -110,6 +110,58 @@
   </div>
 </div>
 
+<!-- ═══ IMPORT MODAL ════════════════════════════════════════════════════════
+     Shown after a valid JSON file is picked. Lets the user (1) preview the
+     exact dates that will be added and overwritten, and (2) choose merge
+     mode — "add only" (skip conflicts) or "overwrite" (default: replace
+     conflicting entries, keep everything else). No destructive write
+     happens until the user clicks Confirm. -->
+<div class="modal-overlay" id="importModal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-head">
+      <h3>Confirm import</h3>
+      <button class="modal-close" data-testid="import-cancel-btn" onclick="cancelImport()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p id="importFileMeta" class="import-meta"></p>
+
+      <div class="past-section-title" style="margin-top:0">Merge mode</div>
+      <div class="import-modes">
+        <label class="import-mode">
+          <input type="radio" name="importMode" value="overwrite" data-testid="import-mode-overwrite" checked>
+          <div>
+            <div class="import-mode-title">Overwrite conflicts</div>
+            <div class="import-mode-sub">Existing days matching the file get replaced. Non-conflicting existing days stay.</div>
+          </div>
+        </label>
+        <label class="import-mode">
+          <input type="radio" name="importMode" value="add-only" data-testid="import-mode-add-only">
+          <div>
+            <div class="import-mode-title">Add only</div>
+            <div class="import-mode-sub">Skip any day that already exists here. Newer local edits are never clobbered.</div>
+          </div>
+        </label>
+      </div>
+
+      <div class="import-preview">
+        <div class="import-preview-block">
+          <div class="import-preview-lbl"><span class="pill pill-add" data-testid="import-add-count">0</span>Days to add</div>
+          <ul class="import-date-list" id="importAddList"></ul>
+        </div>
+        <div class="import-preview-block">
+          <div class="import-preview-lbl"><span class="pill pill-overwrite" data-testid="import-overwrite-count">0</span>Days that will overwrite existing entries</div>
+          <ul class="import-date-list" id="importOverwriteList"></ul>
+          <p class="import-preview-hint" id="importOverwriteHint" style="display:none">In <b>Add only</b> mode these days will be <b>skipped</b>, not overwritten.</p>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="cancelImport()">Cancel</button>
+      <button class="btn btn-primary btn-sm" data-testid="import-confirm-btn" onclick="confirmImport()">Confirm import</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ PERIOD MODAL ════════════════════════════════════════════════════════ -->
 <div class="modal-overlay" id="periodModal">
   <div class="modal">
@@ -388,8 +440,11 @@
 
     <!-- Weekly summary note for provider -->
     <div class="card">
-      <div class="ch"><div class="ch-icon">📋</div><div><h3>This week's summary</h3><p>Auto-generated from your logs — copy to share with your provider</p></div>
-        <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="copyWeeklySummary()">📋 Copy</button>
+      <div class="ch"><div class="ch-icon">📋</div><div><h3>This week's summary</h3><p>Auto-generated from your logs — copy or print for your provider</p></div>
+        <div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" data-testid="print-summary-btn" onclick="printWeeklySummary()">🖨 Print</button>
+          <button class="btn btn-ghost btn-sm" onclick="copyWeeklySummary()">📋 Copy</button>
+        </div>
       </div>
       <div class="cb">
         <div id="weeklySummaryText" style="font-size:13px;line-height:1.7;color:var(--text2);white-space:pre-wrap;background:var(--surface2);border-radius:8px;padding:14px;border:1px solid var(--border)"></div>

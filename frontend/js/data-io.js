@@ -5,9 +5,33 @@
 //
 // The schema is versioned so future imports can be migrated. Bump
 // DATA_SCHEMA_VERSION whenever the shape of exported records changes.
+//
+// Import UX:
+//   1. User picks a JSON file.
+//   2. We parse it, validate the shape, and count days to ADD vs OVERWRITE.
+//   3. We open the #importModal listing the exact dates in each bucket and
+//      offering a merge-mode choice ("overwrite" | "add-only").
+//   4. Nothing is written until the user clicks Confirm.
 // ═══════════════════════════════════════════════════════════════════════
 
 const DATA_SCHEMA_VERSION = 1;
+
+// Day-scoped keys the confirm dialog surfaces to the user. Migration flags
+// and other non-day keys are still written, just not listed — users think
+// about their data in days, not internal keys.
+const IMPORT_DAY_FAMILIES = [
+  {prefix:'day_',     label:'log'},
+  {prefix:'morning_', label:'morning'},
+  {prefix:'period_',  label:'period'},
+];
+
+// Buffer holding the parsed & filtered payload between the file pick and
+// the modal Confirm click. Cleared on cancel/confirm.
+let _pendingImport = null;
+
+/* ──────────────────────────────────────────────────────────────────────
+   EXPORT
+   ────────────────────────────────────────────────────────────────────── */
 
 function collectIdgafKeys(){
   const out={};
@@ -45,6 +69,10 @@ function exportAllData(){
   showToast(`💾 Exported ${keyCount} record${keyCount!==1?'s':''}.`);
 }
 
+/* ──────────────────────────────────────────────────────────────────────
+   IMPORT — file pick + parse
+   ────────────────────────────────────────────────────────────────────── */
+
 function triggerImportData(){
   const input=document.getElementById('importFileInput');
   if(!input)return;
@@ -69,66 +97,152 @@ function handleImportFile(evt){
       alert("That doesn't look like a valid IDGAF Tracker export.\n\nExpected a JSON file with a top-level \"data\" object.");
       return;
     }
-    proceedWithImport(payload);
+    // Filter to this app's prefix — never write foreign keys.
+    const filtered={};
+    Object.keys(payload.data).forEach(k=>{
+      if(k.startsWith(STORE_PREFIX)) filtered[k]=payload.data[k];
+    });
+    if(Object.keys(filtered).length===0){
+      alert("That file has no idgaf_* records to import.");
+      return;
+    }
+    openImportModal({
+      filename: file.name,
+      exportDate: payload.exportDate || null,
+      schemaVersion: payload.schemaVersion || null,
+      data: filtered
+    });
   };
   reader.readAsText(file);
 }
 
-/* Count what the import would ADD versus OVERWRITE, restricted to day-level
- * entries (idgaf_day_*, idgaf_morning_*, idgaf_period_*). Non-day keys
- * (migration flags, etc.) are still written but not counted in the confirm
- * message — the user thinks about their data in days, not internal keys. */
-function summarizeImport(incoming){
-  const DAY_FAMILIES=[STORE_PREFIX+'day_', STORE_PREFIX+'morning_', STORE_PREFIX+'period_'];
-  const incomingDays=new Set();
-  const existingDays=new Set();
+/* Split incoming keys into two disjoint sets keyed by DATE (YYYY-MM-DD):
+   `addDates` (nothing exists for that day yet) and `overwriteDates` (at
+   least one day-family key exists for that day). Non-day keys are put in
+   `nonDayKeys` — written silently, not surfaced to the user. */
+function analyzeIncoming(incoming){
+  const incomingDates=new Set();
+  const existingDates=new Set();
+  const nonDayKeys=[];
+
+  const familyFor=k=>IMPORT_DAY_FAMILIES.find(f=>k.startsWith(STORE_PREFIX+f.prefix));
+
   Object.keys(incoming).forEach(k=>{
-    const fam=DAY_FAMILIES.find(f=>k.startsWith(f));
-    if(fam) incomingDays.add(k.slice(fam.length));
+    const fam=familyFor(k);
+    if(fam) incomingDates.add(k.slice((STORE_PREFIX+fam.prefix).length));
+    else nonDayKeys.push(k);
   });
   for(let i=0;i<localStorage.length;i++){
     const k=localStorage.key(i);
-    const fam=DAY_FAMILIES.find(f=>k&&k.startsWith(f));
-    if(fam) existingDays.add(k.slice(fam.length));
+    if(!k) continue;
+    const fam=familyFor(k);
+    if(fam) existingDates.add(k.slice((STORE_PREFIX+fam.prefix).length));
   }
-  let toAdd=0, toOverwrite=0;
-  incomingDays.forEach(d=>{ if(existingDays.has(d)) toOverwrite++; else toAdd++; });
-  return {toAdd, toOverwrite, totalKeys:Object.keys(incoming).length};
+
+  const addDates=[], overwriteDates=[];
+  incomingDates.forEach(d=>{
+    (existingDates.has(d) ? overwriteDates : addDates).push(d);
+  });
+  addDates.sort(); overwriteDates.sort();
+  return {addDates, overwriteDates, nonDayKeys};
 }
 
-function proceedWithImport(payload){
-  const incoming=payload.data;
-  // Only touch keys under this app's prefix, even if a mangled export
-  // includes unrelated keys — never write foreign keys into storage.
-  const filtered={};
-  Object.keys(incoming).forEach(k=>{ if(k.startsWith(STORE_PREFIX)) filtered[k]=incoming[k]; });
-  if(Object.keys(filtered).length===0){
-    alert("That file has no idgaf_* records to import.");
+/* ──────────────────────────────────────────────────────────────────────
+   IMPORT MODAL
+   ────────────────────────────────────────────────────────────────────── */
+
+function openImportModal({filename, exportDate, schemaVersion, data}){
+  const {addDates, overwriteDates, nonDayKeys}=analyzeIncoming(data);
+  _pendingImport={data, addDates, overwriteDates, nonDayKeys};
+
+  // Meta line — filename + when it was exported.
+  const metaBits=[];
+  metaBits.push(`<b>${escapeText(filename)}</b>`);
+  if(exportDate){
+    try{
+      const when=new Date(exportDate);
+      if(!isNaN(when)) metaBits.push(`exported ${when.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}`);
+    }catch{ /* ignore invalid dates */ }
+  }
+  if(schemaVersion) metaBits.push(`schema v${schemaVersion}`);
+  document.getElementById('importFileMeta').innerHTML=metaBits.join(' · ');
+
+  // Preview lists — render the actual dates, not just counts.
+  renderDateList('importAddList', addDates, 'No new days in this file.');
+  renderDateList('importOverwriteList', overwriteDates, 'No existing days would be overwritten.');
+  document.querySelector('[data-testid=import-add-count]').textContent=String(addDates.length);
+  document.querySelector('[data-testid=import-overwrite-count]').textContent=String(overwriteDates.length);
+
+  // Show/hide the "skipped in add-only mode" hint depending on overlap.
+  const hint=document.getElementById('importOverwriteHint');
+  hint.style.display = overwriteDates.length>0 ? 'block' : 'none';
+
+  // Default merge mode: "overwrite" (matches the app's confirmed behaviour).
+  const overwriteRadio=document.querySelector('input[name=importMode][value=overwrite]');
+  if(overwriteRadio) overwriteRadio.checked=true;
+
+  document.getElementById('importModal').classList.add('open');
+}
+
+function renderDateList(id, dates, emptyText){
+  const el=document.getElementById(id);
+  if(!el) return;
+  if(dates.length===0){
+    el.innerHTML=`<li class="import-empty">${emptyText}</li>`;
     return;
   }
-  const {toAdd, toOverwrite, totalKeys}=summarizeImport(filtered);
+  el.innerHTML=dates.map(d=>`<li>${formatDateForList(d)}</li>`).join('');
+}
 
-  const parts=[];
-  parts.push(`Import ${totalKeys} record${totalKeys!==1?'s':''} from this file?`);
-  parts.push('');
-  parts.push(`• Days to ADD: ${toAdd}`);
-  parts.push(`• Days that will OVERWRITE existing entries: ${toOverwrite}`);
-  parts.push('');
-  parts.push(toOverwrite>0
-    ? 'Overwrites cannot be undone. Continue?'
-    : 'Continue?');
+/* Full "Mon, Jan 5 2026" format so users can spot mistakes. Falls back to
+   the raw ISO date if parsing fails (unusual). */
+function formatDateForList(iso){
+  const d=new Date(iso+'T12:00:00');
+  if(isNaN(d)) return escapeText(iso);
+  return d.toLocaleDateString('en-US',{weekday:'short', month:'short', day:'numeric', year:'numeric'});
+}
 
-  if(!confirm(parts.join('\n'))) return;
+function escapeText(s){
+  const div=document.createElement('div');
+  div.textContent=String(s);
+  return div.innerHTML;
+}
 
-  let written=0;
-  Object.keys(filtered).forEach(k=>{
-    const v=filtered[k];
+function cancelImport(){
+  _pendingImport=null;
+  document.getElementById('importModal').classList.remove('open');
+}
+
+function confirmImport(){
+  if(!_pendingImport){ cancelImport(); return; }
+  const {data, overwriteDates}=_pendingImport;
+  const mode=(document.querySelector('input[name=importMode]:checked')||{}).value || 'overwrite';
+
+  // In "add-only" mode, drop every key whose date is already present.
+  const overwriteSet=new Set(overwriteDates);
+  const familyFor=k=>IMPORT_DAY_FAMILIES.find(f=>k.startsWith(STORE_PREFIX+f.prefix));
+  let written=0, skipped=0;
+
+  Object.keys(data).forEach(k=>{
+    const fam=familyFor(k);
+    if(mode==='add-only' && fam){
+      const dateStr=k.slice((STORE_PREFIX+fam.prefix).length);
+      if(overwriteSet.has(dateStr)){ skipped++; return; }
+    }
+    const v=data[k];
     if(typeof v==='string'){ localStorage.setItem(k, v); written++; }
     else if(v!==null && v!==undefined){ localStorage.setItem(k, JSON.stringify(v)); written++; }
   });
 
-  showToast(`📥 Imported ${written} record${written!==1?'s':''}.`);
-  // Re-render whatever view is showing
+  document.getElementById('importModal').classList.remove('open');
+  _pendingImport=null;
+
+  const msg = skipped>0
+    ? `📥 Imported ${written} record${written!==1?'s':''} · skipped ${skipped} conflict${skipped!==1?'s':''}.`
+    : `📥 Imported ${written} record${written!==1?'s':''}.`;
+  showToast(msg);
+
+  // Re-render whatever view is showing.
   renderHistory();
   if(typeof renderToday==='function') renderToday();
   if(typeof renderDashboard==='function') renderDashboard();

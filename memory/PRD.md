@@ -41,6 +41,15 @@ file or directory`. Restructured into the standard Emergent layout:
 - Supervisor now reports both services RUNNING. deployment_agent status: **pass**.
 
 ## What's Been Implemented (2026-01)
+### Follow-up round — Jan 20, 2026
+- **Overwrite Preview + Import Merge Mode**: Replaced the native `confirm()` with a proper `#importModal`. Lists the exact dates that will be added and overwritten (full "Mon, Jan 5, 2026" format, scrollable list per bucket), shows file metadata (name + export date + schema version), and offers two merge modes as radios: **Overwrite conflicts** (default) and **Add only**. In add-only mode, conflicting dates are skipped and reported in the success toast (`Imported N · skipped M conflicts`). Nothing writes until the user clicks Confirm; Cancel/X leave storage untouched. New `data-testid`s: `import-add-count`, `import-overwrite-count`, `import-mode-overwrite`, `import-mode-add-only`, `import-confirm-btn`, `import-cancel-btn`.
+- **Cycle Overlay on Capacity Insight**: `renderCapacityInsight()` now tags each row with `isPeriodFlow` via `loadPeriodDay()` (excluding spotting) and renders a `capacity-cycle-overlay` pill under the summary — "N% of your worst symptom days fell during period flow" plus a plain-language read on whether the cycle is driving the worst days. Hidden entirely when no period data is tracked. A collapsible "See the N worst days" details block lists each worst day with a period badge when applicable.
+- **Print Summary**: New Print button next to Copy on the weekly summary card. Opens a new window with a print-styled HTML document — Fredoka uppercase heading, Space Grotesk body, single-page letter layout, clinical footer note ("Self-reported data; all values are the patient's own scale-based ratings"). Uses the same `#weeklySummaryText` payload so the playful "Fucks left to give" label can never appear — only `Capacity (self-rated 0–10)`. Auto-triggers `window.print()` on load. Data-testid: `print-summary-btn`.
+- `sw.js` `CACHE_VERSION` bumped v14 → v15 (no new files this round, but style bumps warrant it so the modal styles reach offline users).
+
+### Initial round — Jan 2026
+
+## What's Been Implemented (2026-01)
 ### Feature A — Capacity rating
 - **`js/symptoms.js`**: appended `{label:'Fucks left to give', icon:'🫠', clinicalLabel:'Capacity (self-rated 0–10)', prompt:'…'}` as `WELLNESS_ITEMS[5]`. Existing 5 entries unchanged.
 - **`index.html`**: added 6th slider row (`#w5` / `#wv5`) in the end-of-day wellness card with the playful label + prompt hint. Added `#capacityInsightCard` on the dashboard.

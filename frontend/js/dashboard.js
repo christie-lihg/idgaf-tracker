@@ -166,7 +166,9 @@ function renderCapacityInsight(){
     const hasWellness=Object.keys(log.wellness||{}).length>0;
     if(!hasWellness) return null;
     if(log.wellness[CAP_IDX]===undefined) return null;
-    return {date:d, capacity:+log.wellness[CAP_IDX], events:log.events.length};
+    const period=(typeof loadPeriodDay==='function') ? loadPeriodDay(d) : null;
+    const isPeriodFlow=!!(period && period.flow && period.flow!=='none' && period.flow!=='spotting');
+    return {date:d, capacity:+log.wellness[CAP_IDX], events:log.events.length, isPeriodFlow};
   }).filter(Boolean);
 
   const MIN=10;
@@ -204,6 +206,32 @@ function renderCapacityInsight(){
     ? `Your capacity holds steady across your worst and best symptom days.`
     : `On your ${worst.length} worst symptom days you had <b>${worstAvg.toFixed(1)} out of 10</b> left to give, versus <b>${bestAvg.toFixed(1)}</b> on your best days. That's a <b>${Math.abs(pct)}% ${dir}</b>.`;
 
+  // Cycle overlay: how many of the worst-symptom days coincided with an
+  // active period-flow day (excluding spotting). Hidden entirely when the
+  // user tracks no period data — nothing helpful to say.
+  const worstPeriod=worst.filter(r=>r.isPeriodFlow).length;
+  const bestPeriod=best.filter(r=>r.isPeriodFlow).length;
+  const anyPeriodTracked = rows.some(r=>r.isPeriodFlow);
+  let cycleLine='';
+  if(anyPeriodTracked){
+    const pctWorst=Math.round((worstPeriod/worst.length)*100);
+    const cycleInsight = worstPeriod>bestPeriod
+      ? `Your worst days line up with your period more often than your best (<b>${worstPeriod}</b> of ${worst.length} vs <b>${bestPeriod}</b> of ${best.length}).`
+      : worstPeriod<bestPeriod
+        ? `Your period doesn't seem to be driving your worst days here (<b>${worstPeriod}</b> of ${worst.length} vs <b>${bestPeriod}</b> of ${best.length}).`
+        : `Your worst and best days include the same number of period days (<b>${worstPeriod}</b> each) — cycle isn't the standout factor.`;
+    cycleLine = `<p class="cap-cycle" data-testid="capacity-cycle-overlay">🩸 <b>${pctWorst}%</b> of your worst symptom days fell during period flow. ${cycleInsight}</p>`;
+  }
+
+  // Mini date list marking period days so the user can see the overlap.
+  const worstList = worst.slice().reverse().map(r=>`
+    <li class="cap-day${r.isPeriodFlow?' cap-day-period':''}">
+      <span class="cap-day-date">${formatShortDate(r.date)}</span>
+      <span class="cap-day-events">${r.events} sym</span>
+      <span class="cap-day-cap">${r.capacity}/10</span>
+      ${r.isPeriodFlow?'<span class="cap-day-badge">🩸 period</span>':''}
+    </li>`).join('');
+
   body.innerHTML=`
     <div class="cap-grid">
       <div class="cap-stat cap-stat-worst">
@@ -218,8 +246,19 @@ function renderCapacityInsight(){
       </div>
     </div>
     <p class="cap-summary">${summary}</p>
+    ${cycleLine}
+    <details class="cap-details">
+      <summary>See the ${worst.length} worst days</summary>
+      <ul class="cap-day-list">${worstList}</ul>
+    </details>
     <p class="cap-note">Based on ${rows.length} days with capacity logged in the last 30.</p>
   `;
+}
+
+function formatShortDate(iso){
+  const d=new Date(iso+'T12:00:00');
+  if(isNaN(d)) return iso;
+  return d.toLocaleDateString('en-US',{month:'short', day:'numeric'});
 }
 
 function aggregateWeek(days){
@@ -340,6 +379,75 @@ function buildWeeklySummary(days,agg){
 function copyWeeklySummary(){
   const txt=document.getElementById('weeklySummaryText').textContent;
   navigator.clipboard.writeText(txt).then(()=>showToast("📋 Copied! Go show 'em."));
+}
+
+/* Print view for the clinician. Opens a new window with the summary text
+ * rendered in a print-friendly layout (single page, no colour, uppercase
+ * Fredoka heading, keeps the clinical register — the playful label never
+ * appears here because #weeklySummaryText already uses `clinicalLabel`). */
+function printWeeklySummary(){
+  const txt=(document.getElementById('weeklySummaryText').textContent||'').trim();
+  if(!txt){ showToast('Nothing to print yet — log some days first.'); return; }
+
+  // Split the copy-summary text into a header (first line: "Week of …")
+  // and the body so the printed page reads cleanly.
+  const lines=txt.split('\n');
+  const header=escape(lines[0]||'');
+  const body=escape(lines.slice(1).join('\n').trim());
+
+  const w=window.open('', '_blank', 'width=820,height=1000');
+  if(!w){ showToast('Please allow pop-ups to print.'); return; }
+  const generated=new Date().toLocaleString('en-US',{dateStyle:'medium', timeStyle:'short'});
+  w.document.open();
+  w.document.write(`<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IDGAF Tracker — Weekly Summary</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Space+Grotesk:wght@400;500&display=swap">
+<style>
+  @page { size: letter; margin: 0.6in; }
+  * { box-sizing: border-box; }
+  body { font-family:'Space Grotesk',system-ui,sans-serif; color:#111; line-height:1.55; margin:0; }
+  .sheet { max-width: 7.2in; margin: 0 auto; padding: 0.2in 0; }
+  h1 { font-family:'Fredoka',sans-serif; font-weight:700; text-transform:uppercase; letter-spacing:.02em;
+        font-size:22px; margin:0 0 4px; border-bottom:2px solid #111; padding-bottom:8px; }
+  .sub { font-size:11px; color:#555; margin:0 0 18px; text-transform:uppercase; letter-spacing:.08em; }
+  h2 { font-family:'Fredoka',sans-serif; font-weight:600; text-transform:uppercase; letter-spacing:.02em;
+        font-size:13px; margin:16px 0 6px; color:#111; }
+  pre { font-family:'Space Grotesk',system-ui,sans-serif; white-space:pre-wrap; font-size:12.5px;
+        margin:0; padding:0; color:#111; }
+  .footer { margin-top:22px; padding-top:10px; border-top:1px solid #999; font-size:10.5px; color:#555; }
+  .footer b { color:#111; }
+  @media print { .no-print { display:none } }
+  .no-print { text-align:right; margin:8px 0 14px; }
+  .no-print button { font-family:'Space Grotesk',sans-serif; font-size:12px; padding:6px 12px;
+        border:1.5px solid #111; background:#fff; cursor:pointer; margin-left:6px; }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="no-print">
+    <button onclick="window.print()">🖨 Print</button>
+    <button onclick="window.close()">Close</button>
+  </div>
+  <h1>Weekly symptom summary</h1>
+  <p class="sub">${header}</p>
+  <h2>Report</h2>
+  <pre>${body}</pre>
+  <div class="footer">
+    Generated by <b>IDGAF Tracker</b> · ${generated}<br>
+    Self-reported data; all values are the patient's own scale-based ratings (0 = worst, 10 = best).
+  </div>
+</div>
+<script>window.addEventListener('load',()=>setTimeout(()=>window.print(),350));</script>
+</body>
+</html>`);
+  w.document.close();
+
+  function escape(s){
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
 }
 
 function setKpi(valId,val,trendId,cur,prv,lowerBetter){

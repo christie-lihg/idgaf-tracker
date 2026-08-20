@@ -525,6 +525,54 @@ input[type=text],textarea,.note-input{
 .data-actions{display:flex;gap:10px;flex-wrap:wrap}
 .data-hint{font-size:11px;color:var(--muted);margin-top:10px}
 
+/* ── Capacity insight — cycle overlay + day list ───────────────────── */
+.cap-cycle{font-size:12.5px;line-height:1.55;color:var(--text2);background:var(--peach);
+  border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;margin-top:10px}
+.cap-cycle b{color:var(--forest);font-weight:700}
+.cap-details{margin-top:12px;font-size:12px}
+.cap-details summary{cursor:pointer;font-weight:600;color:var(--text2);padding:6px 8px;
+  background:var(--surface2);border:1.5px solid var(--border);border-radius:6px;
+  box-shadow:2px 2px 0 var(--border);display:inline-block}
+.cap-details summary:hover{background:var(--mint)}
+.cap-day-list{list-style:none;padding:8px 0 0;margin:0}
+.cap-day{display:flex;align-items:center;gap:10px;padding:6px 10px;font-size:12px;
+  border-bottom:1px dashed rgba(0,0,0,.1)}
+.cap-day-period{background:rgba(230,0,138,.05)}
+.cap-day-date{min-width:80px;font-weight:600;color:var(--forest)}
+.cap-day-events{color:var(--muted);font-size:11px}
+.cap-day-cap{margin-left:auto;font-weight:700;color:var(--forest)}
+.cap-day-badge{font-size:10px;background:var(--rose);color:#fff;padding:2px 6px;border-radius:10px;
+  font-weight:700;letter-spacing:.02em}
+
+/* ── Import modal ─────────────────────────────────────────────────── */
+.import-meta{font-size:12px;color:var(--muted);margin:0 0 12px;padding:8px 10px;
+  background:var(--surface2);border:1.5px solid var(--border);border-radius:6px;line-height:1.5}
+.import-meta b{color:var(--text2);font-weight:700}
+.import-modes{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+.import-mode{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;
+  border:1.5px solid var(--border);border-radius:8px;cursor:pointer;background:var(--surface);
+  transition:background-color .12s ease}
+.import-mode:has(input:checked){background:var(--mint);box-shadow:3px 3px 0 var(--border)}
+.import-mode input[type=radio]{margin-top:3px;flex-shrink:0;accent-color:var(--forest)}
+.import-mode-title{font-weight:700;font-size:13px;color:var(--forest)}
+.import-mode-sub{font-size:11px;color:var(--muted);margin-top:2px;line-height:1.4}
+.import-preview{display:flex;flex-direction:column;gap:12px}
+.import-preview-block{border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;
+  background:var(--surface2)}
+.import-preview-lbl{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;
+  color:var(--forest);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px}
+.pill{display:inline-block;min-width:26px;text-align:center;font-family:'Fredoka',sans-serif;
+  font-weight:700;padding:2px 8px;border:1.5px solid var(--border);border-radius:12px;font-size:12px}
+.pill-add{background:var(--chart5);color:#fff}
+.pill-overwrite{background:var(--amber);color:#111}
+.import-date-list{list-style:none;padding:0;margin:0;max-height:120px;overflow-y:auto;
+  font-size:12px;color:var(--text2)}
+.import-date-list li{padding:3px 0;border-bottom:1px dashed rgba(0,0,0,.08)}
+.import-date-list li:last-child{border-bottom:none}
+.import-empty{color:var(--muted);font-style:italic}
+.import-preview-hint{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.5}
+.import-preview-hint b{color:var(--text2)}
+
 @media(max-width:640px){
   .cap-grid{grid-template-columns:1fr}
 }
