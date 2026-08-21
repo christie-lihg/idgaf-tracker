@@ -22,3 +22,10 @@ package-lock.json
 
 # Local agent/editor config
 .claude/
+.env
+.env.*
+*.env
+credentials.json
+*.pem
+*.key
+.credentials
