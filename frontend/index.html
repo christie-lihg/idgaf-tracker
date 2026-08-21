@@ -32,6 +32,7 @@
   See docs/ARCHITECTURE.md.
 -->
 <script defer src="vendor/chart.umd.min.js"></script>
+<script defer src="vendor/qrcode.min.js"></script>
 <script defer src="js/symptoms.js"></script>
 <script defer src="js/storage.js"></script>
 <script defer src="js/utils.js"></script>
@@ -44,6 +45,9 @@
 <script defer src="js/cycle.js"></script>
 <script defer src="js/import-health.js"></script>
 <script defer src="js/data-io.js"></script>
+<script defer src="js/backup-reminder.js"></script>
+<script defer src="js/custom-ratings.js"></script>
+<script defer src="js/share-qr.js"></script>
 <script defer src="js/init.js"></script>
 <script defer src="js/register-sw.js"></script>
 </head>
@@ -94,18 +98,68 @@
         </div>
       </div>
 
-      <div class="past-section-title">⚡ Daytime symptoms (check all that occurred)</div>
+      <div class="past-section-title">⚡ Daytime symptoms (did I do that? check what hit)</div>
       <div class="past-sym-grid" id="pastSymGrid"></div>
 
       <div class="past-section-title">🌡 Wellness ratings</div>
       <div id="pastWellnessSliders"></div>
+      <div id="pastCustomRatings" data-testid="past-custom-ratings"></div>
 
-      <div class="past-section-title">📝 Note</div>
-      <textarea class="notes-area" id="pastNote" placeholder="Optional..." style="min-height:56px"></textarea>
+      <div class="past-section-title">📝 Yada, yada, yada</div>
+      <textarea class="notes-area" id="pastNote" placeholder="Yada, yada, yada..." style="min-height:56px"></textarea>
     </div>
     <div class="modal-foot">
       <button class="btn btn-ghost btn-sm" onclick="closePastModal()">Cancel</button>
       <button class="btn btn-primary btn-sm" data-testid="save-past-day-btn" onclick="savePastDay()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ ADD CUSTOM RATING MODAL ═════════════════════════════════════════════ -->
+<div class="modal-overlay" id="addRatingModal">
+  <div class="modal" style="max-width:420px">
+    <div class="modal-head">
+      <h3>Add a custom rating</h3>
+      <button class="modal-close" onclick="closeAddCustomRating()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="import-meta" style="margin-top:0">A new 0–10 slider you can rate every day. Stored on this device only.</p>
+      <label class="add-rating-label" for="addRatingLabel">Name</label>
+      <input type="text" id="addRatingLabel" data-testid="add-rating-label" class="notes-area" style="min-height:auto;padding:9px 12px" placeholder="e.g. Hydration, Focus, Aches" maxlength="30" autocomplete="off">
+      <label class="add-rating-label" for="addRatingIcon">Emoji (optional)</label>
+      <input type="text" id="addRatingIcon" data-testid="add-rating-icon" class="notes-area" style="min-height:auto;padding:9px 12px;max-width:100px" placeholder="⭐" maxlength="4" autocomplete="off">
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeAddCustomRating()">Cancel</button>
+      <button class="btn btn-primary btn-sm" data-testid="add-rating-save-btn" onclick="saveNewCustomRating()">Save rating</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SHARE-QR MODAL ═════════════════════════════════════════════════════
+     Encrypts the current weekly summary client-side (AES-GCM) and shows a
+     QR pointing to share.html#<ciphertext>. The passphrase is displayed
+     separately so the user prints or writes it down for the clinician —
+     nothing about the summary or passphrase is ever transmitted. -->
+<div class="modal-overlay" id="shareQrModal">
+  <div class="modal" style="max-width:520px">
+    <div class="modal-head">
+      <h3>Share summary via QR</h3>
+      <button class="modal-close" onclick="closeShareQrModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <p class="share-lead">Show this to your provider. They scan the QR, type the passphrase, and see this week's summary in their browser. Nothing gets uploaded — the encrypted payload lives entirely in the QR.</p>
+      <div class="share-qr-wrap"><canvas id="shareQrCanvas" data-testid="share-qr-canvas"></canvas></div>
+      <div class="share-passphrase" data-testid="share-passphrase-block">
+        <div class="share-lbl">Passphrase (say it out loud, don't email it)</div>
+        <div class="share-pass" id="sharePassText" data-testid="share-passphrase-text">—</div>
+        <button class="btn btn-ghost btn-sm" data-testid="share-copy-pass-btn" onclick="copySharePassphrase()">Copy passphrase</button>
+      </div>
+      <p class="share-note">The QR link opens locally on the provider's device. Expires when they close the tab — nothing is stored server-side.</p>
+    </div>
+    <div class="modal-foot">
+      <button class="btn btn-ghost btn-sm" onclick="closeShareQrModal()">Done</button>
+      <button class="btn btn-primary btn-sm" data-testid="share-print-btn" onclick="printSharePayload()">🖨 Print handout</button>
     </div>
   </div>
 </div>
@@ -202,34 +256,47 @@
     </div>
   </div>
 
+  <!-- ── BACKUP REMINDER (hidden by default; maybeShowBackupReminder() reveals it) ── -->
+  <div class="backup-banner" id="backupBanner" data-testid="backup-banner" style="display:none">
+    <div class="bb-icon">💾</div>
+    <div class="bb-body">
+      <div class="bb-title">Time for a fresh backup?</div>
+      <div class="bb-msg" id="backupBannerMsg"></div>
+    </div>
+    <div class="bb-actions">
+      <button class="btn btn-primary btn-sm" data-testid="backup-banner-export" onclick="exportFromBackupBanner()">⬇ Export now</button>
+      <button class="btn btn-ghost btn-sm" data-testid="backup-banner-snooze" onclick="snoozeBackupReminder()">Remind me later</button>
+    </div>
+  </div>
+
   <!-- ── MORNING SUMMARY ── -->
   <div class="morning-card pending" id="morningCard">
     <div class="morning-header" onclick="toggleMorning()">
       <div class="mh-icon" id="mhIcon">🌅</div>
       <div class="mh-text">
         <div class="mh-title">Morning check-in</div>
-        <div class="mh-sub" id="mhSub">How was your night? Takes 30 seconds.</div>
+        <div class="mh-sub" id="mhSub">How you doin'? Takes 30 seconds, tops.</div>
       </div>
       <div class="mh-status" id="mhStatus">Not done</div>
       <div class="mh-chevron open" id="mhChevron">▼</div>
     </div>
     <div class="morning-body open" id="morningBody">
 
-      <div class="morning-section-title">What happened overnight? (check all that apply)</div>
+      <div class="morning-section-title">Did I do that? (check whatever hit overnight)</div>
       <div class="on-grid" id="overnightGrid"></div>
 
-      <div class="morning-section-title">How many hours did you sleep?</div>
+      <div class="morning-section-title">How much sweet, sweet sleep did you get?</div>
       <div class="sleep-hours-row" id="sleepHoursRow"></div>
 
-      <div class="morning-section-title">How would you rate last night's sleep quality? <span id="sleepQualVal" style="color:var(--forest);font-size:13px;font-weight:700"></span></div>
+      <div class="morning-section-title">Sleep quality — ugh to yasss <span id="sleepQualVal" style="color:var(--forest);font-size:13px;font-weight:700"></span></div>
       <div class="sli-row" style="margin-bottom:16px">
-        <div class="sli-lbl" style="color:var(--muted);font-size:11px">0 = Terrible</div>
+        <div class="sli-lbl" style="color:var(--muted);font-size:11px">0 = Bogus</div>
         <input type="range" class="sli" id="sleepQualSlider" min="0" max="10" value="5"
           oninput="document.getElementById('sleepQualVal').textContent=this.value+'/10'">
-        <div class="sli-lbl" style="color:var(--muted);font-size:11px;text-align:right">10 = Great</div>
+        <div class="sli-lbl" style="color:var(--muted);font-size:11px;text-align:right">10 = Da bomb</div>
       </div>
 
-      <div class="morning-section-title">Anything to note about last night?</div>
+      <div class="morning-section-title">Anything else? Spill the tea.</div>
       <textarea class="morning-note" id="morningNote" placeholder="e.g. woke up 3x, room too hot, anxious before bed..."></textarea>
 
       <div class="morning-save-row">
@@ -241,7 +308,7 @@
   <div class="card">
     <div class="ch">
       <div class="ch-icon">⚡</div>
-      <div><h3>Tap when it happens</h3><p>Log symptoms in real time — multiple taps = multiple occurrences</p></div>
+      <div><h3>Tap when it hits</h3><p>Real-time symptom log. Multiple taps = multiple occurrences. Just do it.</p></div>
     </div>
     <div class="cb">
       <div class="sym-grid" id="symGrid"></div>
@@ -267,7 +334,7 @@
   <div class="card">
     <div class="ch">
       <div class="ch-icon">🌡</div>
-      <div><h3>End-of-day wellness (optional)</h3><p>0 = worst · 10 = best</p></div>
+      <div><h3>End-of-day wellness (optional)</h3><p>0 = totally bogus · 10 = all that</p></div>
       <button class="btn btn-ghost btn-sm" style="margin-left:auto" data-testid="save-wellness-btn" onclick="saveWellness()">Save</button>
     </div>
     <div class="cb">
@@ -301,12 +368,16 @@
         <input type="range" class="sli" id="w5" min="0" max="10" value="5" oninput="document.getElementById('wv5').textContent=this.value">
         <div class="sli-val" id="wv5">5</div>
       </div>
+      <div id="customRatingsContainer" data-testid="custom-ratings-container"></div>
+      <div class="custom-rating-add-row">
+        <button class="btn btn-ghost btn-sm" data-testid="add-custom-rating-btn" onclick="openAddCustomRating()">+ Add your own rating</button>
+      </div>
     </div>
   </div>
 
   <!-- Note -->
   <div class="card">
-    <div class="ch"><div class="ch-icon">📝</div><div><h3>Daily note</h3><p>What might be affecting your symptoms today?</p></div></div>
+    <div class="ch"><div class="ch-icon">📝</div><div><h3>Dear diary…</h3><p>What's the deal today? Anything worth noting?</p></div></div>
     <div class="cb">
       <textarea class="notes-area" id="dayNote" placeholder="e.g. stressful day, bad sleep, started new supplement..." oninput="saveDayNote(this.value)"></textarea>
     </div>
@@ -318,7 +389,7 @@
 <!-- ═══ PERIOD / CYCLE ════════════════════════════════════════════════════════ -->
 <div class="view" id="view-period">
 <div class="container">
-  <div class="pt"><h2>Cycle Tracker</h2><p>Tap any day to log flow. Pattern data feeds into your dashboard.</p></div>
+  <div class="pt"><h2>Cycle Tracker</h2><p>Tap any day to log flow. Aunt Flo, meet the dashboard.</p></div>
 
   <div class="cycle-stats" id="cycleStats">
     <div class="cstat"><div class="cstat-val" id="csCycleLen">—</div><div class="cstat-lbl">Avg cycle length</div></div>
@@ -442,6 +513,7 @@
     <div class="card">
       <div class="ch"><div class="ch-icon">📋</div><div><h3>This week's summary</h3><p>Auto-generated from your logs — copy or print for your provider</p></div>
         <div style="margin-left:auto;display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-ghost btn-sm" data-testid="share-qr-btn" onclick="openShareQrModal()">🔗 Share QR</button>
           <button class="btn btn-ghost btn-sm" data-testid="print-summary-btn" onclick="printWeeklySummary()">🖨 Print</button>
           <button class="btn btn-ghost btn-sm" onclick="copyWeeklySummary()">📋 Copy</button>
         </div>
@@ -459,7 +531,7 @@
 <div class="view" id="view-history">
 <div class="container">
   <div class="pt" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px">
-    <div><h2>Log History</h2><p>All days with at least one entry, newest first.</p></div>
+    <div><h2>Log History</h2><p>Everything you've logged. Freshest first.</p></div>
     <button class="btn btn-primary btn-sm" onclick="openPastModal()">+ Log past day</button>
   </div>
   <div class="card"><div class="cb" id="historyList"></div></div>

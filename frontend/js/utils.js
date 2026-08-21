@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, emergent/no-undef */
 /* ── 90s voice ────────────────────────────────────────────────────────
  *
  * Tone rule: logging a hot flash is not an achievement, so these commiserate
@@ -59,6 +60,16 @@ const HYPE = [
   'Hang in there.',
   'As if you needed that.',
   'Blergh.',
+  'Not!',
+  'How rude.',                 // Full House / Michelle Tanner
+  "Whatchu talkin' 'bout?",    // Diff'rent Strokes
+  'Ay caramba.',               // Bart Simpson
+  "Well, isn't that special.", // SNL / Church Lady
+  'Did I do that?',            // Urkel — apologetic, fits a symptom
+  "D'oh.",                     // Homer
+  'Bogus journey.',            // Bill & Ted
+  'Take a chill pill.',
+  "Ain't nobody got time for that.",
 ];
 const hype = makeRotator(HYPE);
 
@@ -70,6 +81,10 @@ const MORNING_SAVED = makeRotator([
   '🌅 Morning: handled.',
   '🌅 All set. Fresh.',
   '🌅 Nice work.',
+  '🌅 Bazinga.',                 // Big Bang Theory
+  '🌅 How you doin\'.',          // Joey / Friends
+  '🌅 Legendary.',               // HIMYM
+  '🌅 Winning.',                 // Charlie Sheen — a classic
 ]);
 const WELLNESS_SAVED = makeRotator([
   "✅ You're all that.",
@@ -77,6 +92,11 @@ const WELLNESS_SAVED = makeRotator([
   '✅ Locked in. Word.',
   '✅ Da bomb.',
   '✅ Sweet.',
+  '✅ Yada, yada, yada — saved.',   // Seinfeld
+  "✅ Pivot! Pivot! …saved.",       // Ross / Friends
+  '✅ Show me the money.',          // Jerry Maguire
+  '✅ Booyah.',                     // Stuart Scott / In Living Color
+  '✅ Cowabunga.',                  // TMNT
 ]);
 
 

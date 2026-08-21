@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, emergent/no-undef */
 /* Registers the service worker. Kept out of index.html so the CSP-friendly
  * "no inline script" property holds across the whole app.
  *

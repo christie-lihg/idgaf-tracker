@@ -7,16 +7,18 @@
  * Bump CACHE_VERSION whenever any shell file changes, or returning users will
  * keep booting the old cached build.
  */
-const CACHE_VERSION = 'idgaf-tracker-v15';
+const CACHE_VERSION = 'idgaf-tracker-v16';
 
 const SHELL = [
   './',
   './index.html',
+  './share.html',
   './manifest.webmanifest',
   './css/styles.css',
   './css/memphis-tile.svg',
   './css/memphis-tile-b.svg',
   './vendor/chart.umd.min.js',
+  './vendor/qrcode.min.js',
   './js/symptoms.js',
   './js/storage.js',
   './js/utils.js',
@@ -29,6 +31,9 @@ const SHELL = [
   './js/cycle.js',
   './js/import-health.js',
   './js/data-io.js',
+  './js/backup-reminder.js',
+  './js/custom-ratings.js',
+  './js/share-qr.js',
   './js/init.js',
   './js/register-sw.js',
   './icons/icon-192.png',

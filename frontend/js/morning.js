@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, emergent/no-undef */
 // MORNING SUMMARY
 // ═══════════════════════════════════════════════════════════════
 
@@ -143,7 +144,7 @@ function updateMorningCardState(saved){
     card.className='morning-card pending';
     if(status)status.textContent='Not done';
     if(icon)icon.textContent='🌅';
-    if(sub)sub.textContent='How was your night? Takes 30 seconds.';
+    if(sub)sub.textContent="How you doin'? Takes 30 seconds, tops.";
   }
 }
 

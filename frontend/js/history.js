@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, emergent/no-undef */
 // HISTORY
 // ═══════════════════════════════════════════════════════════════
 function renderHistory(){

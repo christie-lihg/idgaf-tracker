@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, emergent/no-undef */
 /* Storage keys are prefixed `idgaf_`.
  *
  * They were originally `vv_` — a prefix inherited from the single-file

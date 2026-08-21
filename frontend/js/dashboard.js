@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, emergent/no-undef */
 // DASHBOARD
 // ═══════════════════════════════════════════════════════════════
 let charts={};
@@ -168,7 +169,8 @@ function renderCapacityInsight(){
     if(log.wellness[CAP_IDX]===undefined) return null;
     const period=(typeof loadPeriodDay==='function') ? loadPeriodDay(d) : null;
     const isPeriodFlow=!!(period && period.flow && period.flow!=='none' && period.flow!=='spotting');
-    return {date:d, capacity:+log.wellness[CAP_IDX], events:log.events.length, isPeriodFlow};
+    const symsOnDay=new Set(log.events.map(e=>e.sym));
+    return {date:d, capacity:+log.wellness[CAP_IDX], events:log.events.length, isPeriodFlow, syms:symsOnDay};
   }).filter(Boolean);
 
   const MIN=10;
@@ -223,14 +225,40 @@ function renderCapacityInsight(){
     cycleLine = `<p class="cap-cycle" data-testid="capacity-cycle-overlay">🩸 <b>${pctWorst}%</b> of your worst symptom days fell during period flow. ${cycleInsight}</p>`;
   }
 
-  // Mini date list marking period days so the user can see the overlap.
-  const worstList = worst.slice().reverse().map(r=>`
-    <li class="cap-day${r.isPeriodFlow?' cap-day-period':''}">
+  // Top 3 symptoms across the 30-day window — used to badge the worst-day
+  // list so the user can see which symptoms tend to show up on capacity dips.
+  const symCounts={};
+  rows.forEach(r=>{
+    r.syms.forEach(sIdx=>{ symCounts[sIdx]=(symCounts[sIdx]||0)+1; });
+  });
+  const topSyms=Object.entries(symCounts)
+    .map(([sIdx,c])=>({idx:+sIdx, count:c}))
+    .sort((a,b)=>b.count-a.count)
+    .slice(0,3);
+  const topSet=new Set(topSyms.map(s=>s.idx));
+
+  // Mini date list marking period days AND top-symptom hits so the overlap
+  // reads visually at a glance.
+  const worstList = worst.slice().reverse().map(r=>{
+    const hits=[...r.syms].filter(s=>topSet.has(s));
+    const badges=hits.map(s=>{
+      const label=SYMS[s].label.split(' ')[0];
+      return `<span class="cap-day-sym" title="${SYMS[s].label}">${SYMS[s].icon} ${label}</span>`;
+    }).join('');
+    return `<li class="cap-day${r.isPeriodFlow?' cap-day-period':''}">
       <span class="cap-day-date">${formatShortDate(r.date)}</span>
       <span class="cap-day-events">${r.events} sym</span>
       <span class="cap-day-cap">${r.capacity}/10</span>
       ${r.isPeriodFlow?'<span class="cap-day-badge">🩸 period</span>':''}
-    </li>`).join('');
+      <span class="cap-day-syms">${badges}</span>
+    </li>`;
+  }).join('');
+
+  // Legend row explaining what the badges mean, only when we actually have
+  // any top-3 symptoms to show.
+  const legendLine = topSyms.length>0
+    ? `<p class="cap-legend" data-testid="capacity-top-symptoms">Top symptoms in this window: ${topSyms.map(s=>`<span class="cap-day-sym">${SYMS[s.idx].icon} ${SYMS[s.idx].label.split(' ')[0]} <b>×${s.count}</b></span>`).join(' ')}</p>`
+    : '';
 
   body.innerHTML=`
     <div class="cap-grid">
@@ -247,6 +275,7 @@ function renderCapacityInsight(){
     </div>
     <p class="cap-summary">${summary}</p>
     ${cycleLine}
+    ${legendLine}
     <details class="cap-details">
       <summary>See the ${worst.length} worst days</summary>
       <ul class="cap-day-list">${worstList}</ul>
@@ -352,6 +381,29 @@ function buildWeeklySummary(days,agg){
   text+=`  Mood: ${avgM}\n`;
   text+=`  Sleep quality: ${avgS}\n`;
   text+=`  ${WELLNESS_ITEMS[5].clinicalLabel}: ${avgCap}\n`;
+
+  // Custom user-defined ratings — average over the same 7 days. Their labels
+  // are user-supplied so we render them verbatim (no clinical alias to swap
+  // in). This is intentional: providers see whatever the patient called it.
+  if(typeof loadCustomRatings==='function'){
+    const customs=loadCustomRatings();
+    if(customs.length>0){
+      const sums={}, counts={};
+      days.forEach(d=>{
+        const cw=(loadDay(d).customWellness)||{};
+        Object.keys(cw).forEach(id=>{
+          sums[id]=(sums[id]||0)+cw[id];
+          counts[id]=(counts[id]||0)+1;
+        });
+      });
+      const rendered=customs
+        .filter(r=>counts[r.id]>0)
+        .map(r=>`  ${r.label}: ${(sums[r.id]/counts[r.id]).toFixed(1)}`);
+      if(rendered.length>0){
+        text+=`\nYour custom ratings (0–10):\n`+rendered.join('\n')+'\n';
+      }
+    }
+  }
 
   // notes from the week
   const notes=days.map(d=>({date:d,note:loadDay(d).note})).filter(x=>x.note&&x.note.trim());

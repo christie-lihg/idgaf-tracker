@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IDGAF Tracker — Provider view</title>
+<meta name="theme-color" content="#2b1b6b">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700&family=Space+Grotesk:wght@400;500;700&display=swap">
+<link rel="stylesheet" href="css/styles.css">
+<!--
+  Provider view for encrypted share handouts. This page reads its payload
+  from the URL fragment (which is NEVER sent to any server) and decrypts
+  it in the browser with a passphrase the provider types. Nothing here
+  writes to storage, calls the network, or contacts a backend.
+-->
+<style>
+  body{margin:0}
+  .sv-wrap{max-width:720px;margin:0 auto;padding:32px 20px}
+  .sv-card{background:var(--surface);border:var(--bw) solid var(--border);
+    border-radius:var(--r);box-shadow:5px 5px 0 var(--border);padding:24px}
+  .sv-title{font-family:'Fredoka',sans-serif;font-weight:700;text-transform:uppercase;
+    letter-spacing:.02em;font-size:24px;color:var(--forest);margin:0 0 6px}
+  .sv-sub{font-size:12px;color:var(--muted);margin:0 0 22px;letter-spacing:.06em;text-transform:uppercase}
+  .sv-lead{font-size:13px;color:var(--text2);line-height:1.55;margin:0 0 18px}
+  .sv-input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:8px;
+    font-family:'Space Grotesk',sans-serif;font-size:16px;background:var(--surface2);
+    box-shadow:inset 2px 2px 0 rgba(0,0,0,.08)}
+  .sv-input:focus{outline:none;background:#fff;box-shadow:3px 3px 0 var(--border)}
+  .sv-btn{margin-top:14px;font-family:'Fredoka',sans-serif;font-weight:600;text-transform:uppercase;
+    letter-spacing:.04em;background:var(--forest);color:#fff;border:2px solid var(--border);
+    padding:10px 18px;border-radius:8px;cursor:pointer;box-shadow:4px 4px 0 var(--border)}
+  .sv-btn:active{transform:translate(2px,2px);box-shadow:2px 2px 0 var(--border)}
+  .sv-error{margin-top:12px;font-size:13px;color:var(--rose);font-weight:600}
+  .sv-error:empty{display:none}
+  .sv-out{white-space:pre-wrap;font-family:'Space Grotesk',sans-serif;font-size:13.5px;line-height:1.7;
+    background:var(--surface2);border:1.5px solid var(--border);border-radius:8px;padding:16px;
+    color:var(--text2);margin-top:18px}
+  .sv-out-hd{font-family:'Fredoka',sans-serif;font-weight:700;text-transform:uppercase;
+    letter-spacing:.03em;font-size:14px;color:var(--forest);margin:24px 0 6px}
+  .sv-foot{margin-top:22px;padding-top:14px;border-top:1px solid var(--border);
+    font-size:11px;color:var(--muted);line-height:1.6}
+</style>
+</head>
+<body>
+<div class="sv-wrap">
+  <div class="sv-card">
+    <h1 class="sv-title">Weekly Summary</h1>
+    <p class="sv-sub">Encrypted handout · IDGAF Tracker</p>
+
+    <div id="svGate">
+      <p class="sv-lead">
+        This link carries an encrypted weekly summary. Enter the <b>passphrase</b>
+        (four short words the patient shared with you) to see it. Nothing on this
+        page contacts a server — the whole payload lives in the QR you scanned.
+      </p>
+      <input type="text" class="sv-input" id="svPass" data-testid="share-view-pass"
+        placeholder="e.g. lantern-sage-drift-poppy" autocomplete="off" autocapitalize="off"
+        autocorrect="off" spellcheck="false">
+      <button class="sv-btn" data-testid="share-view-unlock" onclick="unlockShare()">Unlock summary</button>
+      <div class="sv-error" id="svError" data-testid="share-view-error"></div>
+    </div>
+
+    <div id="svResult" style="display:none">
+      <div class="sv-out-hd">Weekly summary</div>
+      <div class="sv-out" id="svText" data-testid="share-view-plaintext"></div>
+      <div class="sv-foot">
+        Self-reported data; all values are the patient's own 0–10 scale ratings.
+        Close this tab when done — nothing was stored anywhere.
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* Decode URL-safe base64 (no padding) into a Uint8Array. */
+  function b64UrlToBytes(str){
+    let s=str.replace(/-/g,'+').replace(/_/g,'/');
+    while(s.length%4) s+='=';
+    const bin=atob(s);
+    const out=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) out[i]=bin.charCodeAt(i);
+    return out;
+  }
+
+  async function unlockShare(){
+    const err=document.getElementById('svError');
+    err.textContent='';
+    const passphrase=(document.getElementById('svPass').value||'').trim();
+    if(!passphrase){ err.textContent='Enter the passphrase to unlock.'; return; }
+
+    const frag=(location.hash||'').replace(/^#/,'');
+    if(!frag){ err.textContent='This link is missing its encrypted payload.'; return; }
+
+    const parts=frag.split('.');
+    if(parts.length!==3){ err.textContent='This link is malformed — ask the patient to regenerate it.'; return; }
+
+    try{
+      const salt=b64UrlToBytes(parts[0]);
+      const iv=b64UrlToBytes(parts[1]);
+      const cipher=b64UrlToBytes(parts[2]);
+
+      const enc=new TextEncoder();
+      const baseKey=await crypto.subtle.importKey(
+        'raw', enc.encode(passphrase),
+        {name:'PBKDF2'}, false, ['deriveKey']);
+      const key=await crypto.subtle.deriveKey(
+        {name:'PBKDF2', salt, iterations:250000, hash:'SHA-256'},
+        baseKey,
+        {name:'AES-GCM', length:256},
+        false, ['decrypt']);
+      const plainBuf=await crypto.subtle.decrypt({name:'AES-GCM', iv}, key, cipher);
+      const text=new TextDecoder().decode(plainBuf);
+
+      document.getElementById('svGate').style.display='none';
+      document.getElementById('svText').textContent=text;
+      document.getElementById('svResult').style.display='block';
+    }catch(e){
+      // AES-GCM authentication failure or malformed base64 → wrong passphrase
+      // or the link was tampered with. Same message either way — nothing to
+      // gain from distinguishing them.
+      err.textContent='Wrong passphrase, or the link has been changed since it was made.';
+    }
+  }
+
+  document.getElementById('svPass').addEventListener('keydown', e => {
+    if(e.key === 'Enter') unlockShare();
+  });
+</script>
+</body>
+</html>

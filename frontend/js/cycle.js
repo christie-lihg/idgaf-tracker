@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, emergent/no-undef */
 // PERIOD / CYCLE TRACKING
 // ═══════════════════════════════════════════════════════════════
 function periodKey(d){ return STORE_PREFIX+'period_'+d }

@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, emergent/no-undef */
 // TODAY VIEW
 // ═══════════════════════════════════════════════════════════════
 function renderToday(){
@@ -15,6 +16,8 @@ function renderToday(){
   buildSymGrid(log);
   buildTimeline(log,today);
   restoreWellnessSliders(log);
+  if(typeof renderCustomRatings==='function') renderCustomRatings(log);
+  if(typeof maybeShowBackupReminder==='function') maybeShowBackupReminder();
 }
 
 function buildSymGrid(log){
@@ -173,6 +176,7 @@ function saveWellness(){
     const sl=document.getElementById('w'+i);
     if(sl)log.wellness[i]=+sl.value;
   }
+  if(typeof collectCustomRatingsInto==='function') collectCustomRatingsInto(log, 'cr_');
   saveDay(today,log);
   showToast(WELLNESS_SAVED());
 }

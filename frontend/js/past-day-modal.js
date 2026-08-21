@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, emergent/no-undef */
 // PAST DAY MODAL
 // ═══════════════════════════════════════════════════════════════
 function openPastModal(date){
@@ -51,6 +52,10 @@ function openPastModal(date){
       <div class="sli-val" id="pwv${i}">5</div>
     </div>`).join('');
 
+  // Custom ratings (user-defined). Rendered into #pastCustomRatings which sits
+  // just below the default sliders in the modal body.
+  if(typeof renderCustomRatingsInModal==='function') renderCustomRatingsInModal({customWellness:{}});
+
   document.getElementById('pastNote').value='';
   document.getElementById('pastSleepQual').value=5;
   document.getElementById('pastSQVal').textContent='5';
@@ -84,6 +89,7 @@ function openPastModal(date){
         document.getElementById('pwv'+i).textContent=log.wellness[i];
       }
     });
+    if(typeof renderCustomRatingsInModal==='function') renderCustomRatingsInModal(log);
     document.getElementById('pastNote').value=log.note||'';
   }
 
@@ -129,7 +135,9 @@ function savePastDay(){
   });
 
   const note=document.getElementById('pastNote')?.value||'';
-  saveDay(date,{events,wellness,note});
+  const dayLog={events,wellness,note};
+  if(typeof collectCustomRatingsInto==='function') collectCustomRatingsInto(dayLog, 'pcr_');
+  saveDay(date,dayLog);
   closePastModal();
   renderHistory();
   showToast('✅ Backfilled. Nice save.');

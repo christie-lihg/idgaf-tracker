@@ -1,3 +1,4 @@
+/* eslint-disable no-undef, emergent/no-undef */
 // DATA I/O — JSON export & import for every `idgaf_*` key in localStorage.
 // ═══════════════════════════════════════════════════════════════════════
 // Local-only by design. Nothing here touches the network. The exported
@@ -67,6 +68,7 @@ function exportAllData(){
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 
   showToast(`💾 Exported ${keyCount} record${keyCount!==1?'s':''}.`);
+  if(typeof markBackupExported==='function') markBackupExported();
 }
 
 /* ──────────────────────────────────────────────────────────────────────
