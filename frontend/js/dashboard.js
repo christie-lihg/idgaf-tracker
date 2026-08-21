@@ -143,6 +143,10 @@ function renderDashboard(){
 
   // Capacity insight (last 30 days)
   renderCapacityInsight();
+
+  // Custom rating sparklines (extras.js). Auto-hides when the user has
+  // no custom ratings defined.
+  if(typeof renderCustomRatingSparklines==='function') renderCustomRatingSparklines();
 }
 
 /* ── Capacity insight (last 30 days) ─────────────────────────────────
@@ -426,6 +430,10 @@ function buildWeeklySummary(days,agg){
   }
 
   el.textContent=text;
+  // Provider-section filter (extras.js): cache the raw copy AND write the
+  // possibly-filtered version. Downstream copy/print/share all read from
+  // the same element, so filtering here fans out everywhere.
+  if(typeof cacheRawSummaryAndFilter==='function') cacheRawSummaryAndFilter(text);
 }
 
 function copyWeeklySummary(){

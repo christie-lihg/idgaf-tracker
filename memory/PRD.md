@@ -41,6 +41,18 @@ file or directory`. Restructured into the standard Emergent layout:
 - Supervisor now reports both services RUNNING. deployment_agent status: **pass**.
 
 ## What's Been Implemented (2026-01)
+### Follow-up round 3 — Jan 21, 2026
+- **Bug: Confetti background restored**: `.card` was fully opaque white, hiding the memphis pattern. Set `background: rgba(255,255,255,.88)` + light backdrop blur so the Saved-by-the-Bell tiles peek through inside cards. Bumped body pattern opacity `.45 → .75` for a richer feel.
+- **Bug: 🌿 leaf removed from empty states**: Timeline empty → `📼` (VHS), Dashboard empty → `📊`. The lone remaining `🌿` in the DOM is the legit "Vaginal dryness" symptom tile in `SYMS[]`.
+- **Reminder to log**: New collapsible card on the Today view. Toggle + time picker, persists to `idgaf_reminder_enabled` / `idgaf_reminder_time_hhmm`. Fires a local `Notification` at most once per day (`idgaf_reminder_last_fired`) if the local time is past the reminder AND today has no logged events. Uses the browser Notifications API; asks permission on first opt-in.
+- **Streak Nudge**: `.streak-pill` in the Today header. Counts consecutive days ending today that have any log signal (events, wellness, custom wellness, morning). Shows "🔥 X day streak — you got this" when ≥3. Verified: 5-day seed → visible, 2-day → hidden.
+- **Custom Rating Trends (sparklines)**: `#customSparklinesContainer` on the dashboard renders one 14-day sparkline per user-defined rating using Chart.js. Auto-hidden when the user has no customs. Each card shows label + emoji + latest value.
+- **Provider Card Templates**: Collapsible `<details>` inside the Share/QR modal with 5 section checkboxes (symptoms / wellness / custom / notes / overnight). Filter runs on `#weeklySummaryText` so ALL downstream flows (copy, print, share QR) use the same filtered payload. Debounced re-encryption of the QR canvas on toggle. Selection persists in `idgaf_provider_sections`.
+- **Search History**: `[data-testid=history-search]` filter box above `#historyList`. Matches note text OR symptom labels via a `data-search` haystack attribute added per row. Verified: 5 rows, search "headache" → 1 visible.
+- **Copy: "Surfing the Crimson Wave"** (Clueless) prepended to the Cycle view subtitle.
+- **Testing agent**: 100% pass on iteration_1. Every claim above confirmed by Playwright.
+- `sw.js` `CACHE_VERSION` v16 → v17; SHELL now includes `js/extras.js`.
+
 ### Follow-up round 2 — Jan 21, 2026
 - **Symptom Overlay on Capacity Insight**: `renderCapacityInsight()` now computes the top-3 recurring symptoms across the 30-day window and, per worst day, badges every top-symptom that occurred. Also renders a legend chip showing the top-3 with occurrence counts. `data-testid=capacity-top-symptoms`.
 - **Auto Backup**: New `js/backup-reminder.js`. Tracks `idgaf_last_export_at` (updated on every export) and `idgaf_backup_snoozed_until` (7-day snooze). `maybeShowBackupReminder()` runs on every `renderToday()` and shows the peach `.backup-banner` when: >30 days since last export, no active snooze, and ≥5 days tracked. `data-testid`s: `backup-banner`, `backup-banner-export`, `backup-banner-snooze`.

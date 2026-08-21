@@ -97,6 +97,7 @@ async function openShareQrModal(){
 
   _sharePayload={qrUrl, passphrase, summaryPreview:txt};
   document.getElementById('sharePassText').textContent=passphrase;
+  if(typeof renderProviderSectionsUI==='function') renderProviderSectionsUI();
 
   // Render QR to canvas. qrcode-generator can pick the smallest QR version
   // that fits our string; error correction 'L' keeps the code compact so

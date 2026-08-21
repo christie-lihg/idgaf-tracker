@@ -20,6 +20,10 @@ function renderHistory(){
     const m=day.morning;
     const item=document.createElement('div');
     item.className='hi';
+    // haystack for the search box: notes + every symptom label logged
+    const symLabels=[...new Set(day.events.map(e=>SYMS[e.sym]?.label).filter(Boolean))].join(' ');
+    const hay=`${fmtFull(day.date)} ${day.note||''} ${symLabels}`;
+    item.setAttribute('data-search', hay);
     item.innerHTML=`
       <div class="hi-date">📅 ${fmtFull(day.date)}</div>
       <div class="hi-scores">
@@ -36,6 +40,7 @@ function renderHistory(){
   });
 
   container.appendChild(list);
+  if(typeof filterHistory==='function') filterHistory();
 }
 
 function deleteDay(date,e){

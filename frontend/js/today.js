@@ -18,6 +18,9 @@ function renderToday(){
   restoreWellnessSliders(log);
   if(typeof renderCustomRatings==='function') renderCustomRatings(log);
   if(typeof maybeShowBackupReminder==='function') maybeShowBackupReminder();
+  if(typeof renderStreakPill==='function') renderStreakPill();
+  if(typeof renderReminderUI==='function') renderReminderUI();
+  if(typeof maybeFireReminder==='function') maybeFireReminder();
 }
 
 function buildSymGrid(log){
@@ -73,7 +76,7 @@ function buildTimeline(log,today){
 
   if(log.events.length===0){
     cnt.textContent='No events yet';
-    tl.innerHTML=`<div class="empty" style="padding:20px 0"><div class="ei" style="font-size:28px">🌿</div><p>Tap a symptom above to start logging.</p></div>`;
+    tl.innerHTML=`<div class="empty" style="padding:20px 0"><div class="ei" style="font-size:28px" aria-hidden="true">📼</div><p>Tap a symptom above to start logging.</p></div>`;
     return;
   }
 

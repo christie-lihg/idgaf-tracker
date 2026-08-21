@@ -48,6 +48,7 @@
 <script defer src="js/backup-reminder.js"></script>
 <script defer src="js/custom-ratings.js"></script>
 <script defer src="js/share-qr.js"></script>
+<script defer src="js/extras.js"></script>
 <script defer src="js/init.js"></script>
 <script defer src="js/register-sw.js"></script>
 </head>
@@ -149,6 +150,12 @@
     </div>
     <div class="modal-body">
       <p class="share-lead">Show this to your provider. They scan the QR, type the passphrase, and see this week's summary in their browser. Nothing gets uploaded — the encrypted payload lives entirely in the QR.</p>
+
+      <details class="provider-sections" data-testid="provider-sections">
+        <summary>Pick what to include (default: everything)</summary>
+        <div id="providerSectionsUI" class="provider-sections-list"></div>
+      </details>
+
       <div class="share-qr-wrap"><canvas id="shareQrCanvas" data-testid="share-qr-canvas"></canvas></div>
       <div class="share-passphrase" data-testid="share-passphrase-block">
         <div class="share-lbl">Passphrase (say it out loud, don't email it)</div>
@@ -249,6 +256,7 @@
     <div>
       <h2>Today's Log</h2>
       <p id="todayLabel">—</p>
+      <span class="streak-pill" id="streakPill" data-testid="streak-pill" style="display:none"></span>
     </div>
     <div style="display:flex;gap:8px;flex-wrap:wrap">
       <button class="btn btn-ghost btn-sm" onclick="openPastModal()">+ Log past day</button>
@@ -268,6 +276,19 @@
       <button class="btn btn-ghost btn-sm" data-testid="backup-banner-snooze" onclick="snoozeBackupReminder()">Remind me later</button>
     </div>
   </div>
+
+  <!-- ── DAILY REMINDER SETTINGS ── -->
+  <details class="reminder-card">
+    <summary data-testid="reminder-settings-toggle">🔔 Daily reminder to log</summary>
+    <div class="reminder-body">
+      <label class="reminder-switch">
+        <input type="checkbox" id="reminderToggle" data-testid="reminder-toggle" onchange="toggleReminder(event)">
+        <span>Ping me if I haven't logged by</span>
+        <input type="time" id="reminderTime" data-testid="reminder-time" value="20:00" onchange="saveReminderTime(event)">
+      </label>
+      <p class="reminder-msg" id="reminderPermMsg" data-testid="reminder-perm-msg"></p>
+    </div>
+  </details>
 
   <!-- ── MORNING SUMMARY ── -->
   <div class="morning-card pending" id="morningCard">
@@ -324,7 +345,7 @@
     </div>
     <div class="cb" id="timeline">
       <div class="empty" style="padding:20px 0">
-        <div class="ei" style="font-size:28px">🌿</div>
+        <div class="ei" style="font-size:28px" aria-hidden="true">📼</div>
         <p>Tap a symptom above to start logging.</p>
       </div>
     </div>
@@ -389,7 +410,7 @@
 <!-- ═══ PERIOD / CYCLE ════════════════════════════════════════════════════════ -->
 <div class="view" id="view-period">
 <div class="container">
-  <div class="pt"><h2>Cycle Tracker</h2><p>Tap any day to log flow. Aunt Flo, meet the dashboard.</p></div>
+  <div class="pt"><h2>Cycle Tracker</h2><p>Surfing the Crimson Wave. Tap any day to log flow — Aunt Flo, meet the dashboard.</p></div>
 
   <div class="cycle-stats" id="cycleStats">
     <div class="cstat"><div class="cstat-val" id="csCycleLen">—</div><div class="cstat-lbl">Avg cycle length</div></div>
@@ -452,7 +473,7 @@
   <div id="dashEmpty" class="card">
     <div class="cb">
       <div class="empty">
-        <div class="ei">🌿</div>
+        <div class="ei" aria-hidden="true">📊</div>
         <h3>Nada. Zip. Zilch.</h3>
         <p>Start tapping symptoms over in the Today tab and this whole page builds itself. Zero effort required.</p>
         <br><button class="btn btn-primary" onclick="showView('today')">Go to Today →</button>
@@ -497,6 +518,9 @@
       <div class="cb" id="capacityInsightBody"></div>
     </div>
 
+    <!-- Custom rating sparklines (auto-hidden when user has none) -->
+    <div id="customSparklinesContainer" data-testid="custom-sparklines"></div>
+
     <!-- Top symptoms this week -->
     <div class="card">
       <div class="ch"><div class="ch-icon">🔝</div><div><h3>Most frequent this week</h3><p>Ranked by number of logged events</p></div></div>
@@ -533,6 +557,11 @@
   <div class="pt" style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:10px">
     <div><h2>Log History</h2><p>Everything you've logged. Freshest first.</p></div>
     <button class="btn btn-primary btn-sm" onclick="openPastModal()">+ Log past day</button>
+  </div>
+  <div class="history-search-row">
+    <input type="search" id="historySearch" data-testid="history-search" class="notes-area"
+      style="min-height:auto;padding:9px 12px" placeholder="Search notes or symptoms…"
+      oninput="filterHistory()" autocomplete="off">
   </div>
   <div class="card"><div class="cb" id="historyList"></div></div>
 
