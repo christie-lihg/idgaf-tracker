@@ -49,6 +49,7 @@
 <script defer src="js/custom-ratings.js"></script>
 <script defer src="js/share-qr.js"></script>
 <script defer src="js/extras.js"></script>
+<script defer src="js/treatments.js"></script>
 <script defer src="js/init.js"></script>
 <script defer src="js/register-sw.js"></script>
 </head>
@@ -434,6 +435,25 @@
       </div>
     </div>
   </div>
+
+    <div class="card" id="treatmentsCard">
+      <div class="ch">
+        <div class="ch-icon">💊</div>
+        <div><h3>What changed</h3><p>Started something, stopped something, changed a dose? Log the day.</p></div>
+      </div>
+      <div class="cb">
+        <div class="tx-form">
+          <input type="text" id="txLabel" placeholder="e.g. Started estradiol 0.05mg" maxlength="80">
+          <div class="tx-form-row">
+            <select id="txKind" aria-label="Type"></select>
+            <input type="date" id="txDate" aria-label="Date">
+          </div>
+          <input type="text" id="txNote" placeholder="Optional note" maxlength="120">
+          <button class="btn btn-primary" onclick="addTreatment()">Add to the record</button>
+        </div>
+        <div id="txList"></div>
+      </div>
+    </div>
 </div>
 </div>
 
@@ -524,6 +544,14 @@
         <div><h3>Cycle patterns</h3><p>Which symptoms cluster where in your cycle</p></div>
       </div>
       <div class="cb" id="cyclePatternsBody"></div>
+    </div>
+
+    <div class="card" id="txImpactCard" style="display:none">
+      <div class="ch">
+        <div class="ch-icon">💊</div>
+        <div><h3>Did it help?</h3><p>What shifted after each change you logged</p></div>
+      </div>
+      <div class="cb" id="txImpactBody"></div>
     </div>
 
     <!-- Custom rating sparklines (auto-hidden when user has none) -->

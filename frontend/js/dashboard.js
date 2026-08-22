@@ -147,6 +147,9 @@ function renderDashboard(){
   // Symptom clustering across the menstrual cycle
   renderCycleCorrelation();
 
+  // Before/after each logged treatment change
+  if(typeof renderTreatmentImpact==='function') renderTreatmentImpact();
+
   // Custom rating sparklines (extras.js). Auto-hides when the user has
   // no custom ratings defined.
   if(typeof renderCustomRatingSparklines==='function') renderCustomRatingSparklines();
