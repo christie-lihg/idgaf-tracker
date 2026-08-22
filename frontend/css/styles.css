@@ -678,3 +678,16 @@ input[type=text],textarea,.note-input{
 @media(max-width:640px){
   .cap-grid{grid-template-columns:1fr}
 }
+
+/* ── Cycle patterns card ─────────────────────────────────────────── */
+.cyc-row{display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px dashed var(--border)}
+.cyc-row:last-of-type{border-bottom:none}
+.cyc-sym{font-weight:700;min-width:170px;flex-shrink:0}
+.cyc-detail{font-size:13px;color:var(--text2)}
+.cyc-n{display:inline-block;margin-left:8px;font-size:11px;font-weight:700;
+       background:var(--mint);border:2px solid var(--border);border-radius:5px;padding:1px 7px;color:var(--text)}
+.cyc-note{margin-top:12px;font-size:11px;color:var(--muted);line-height:1.5}
+@media (max-width:560px){
+  .cyc-row{flex-direction:column;gap:2px}
+  .cyc-sym{min-width:0}
+}

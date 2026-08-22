@@ -144,6 +144,9 @@ function renderDashboard(){
   // Capacity insight (last 30 days)
   renderCapacityInsight();
 
+  // Symptom clustering across the menstrual cycle
+  renderCycleCorrelation();
+
   // Custom rating sparklines (extras.js). Auto-hides when the user has
   // no custom ratings defined.
   if(typeof renderCustomRatingSparklines==='function') renderCustomRatingSparklines();
@@ -530,3 +533,152 @@ function setTrend(id,cur,prv,lowerBetter){
 }
 
 // ═══════════════════════════════════════════════════════════════
+
+/* ── Cycle patterns ──────────────────────────────────────────────────
+ * Maps every logged symptom event to its CYCLE DAY (day 1 = first day of
+ * flow) and reports which symptoms cluster where.
+ *
+ * Deliberate constraints on what this will claim:
+ *   - Needs >= 2 recorded period starts, i.e. at least one complete cycle.
+ *   - A symptom needs >= MIN_EVENTS occurrences before it is reported at
+ *     all, and the sample size is always shown.
+ *   - A "peak" window is only reported when it holds meaningfully more
+ *     than an even spread would give (PEAK_RATIO). Otherwise the symptom
+ *     is flat across the cycle and calling any window a peak is noise.
+ *   - The wording describes what was logged. It is not a prediction and
+ *     not a medical claim — "clustered on days 21-25", never "will peak".
+ */
+const CYCLE_WINDOWS = [
+  {lo:1,  hi:5,  label:'days 1–5'},
+  {lo:6,  hi:10, label:'days 6–10'},
+  {lo:11, hi:15, label:'days 11–15'},
+  {lo:16, hi:20, label:'days 16–20'},
+  {lo:21, hi:25, label:'days 21–25'},
+  {lo:26, hi:99, label:'day 26+'},
+];
+const CYCLE_MIN_EVENTS = 5;
+const CYCLE_PEAK_RATIO = 1.5;   // vs an even spread across windows
+
+/* Period starts: a flow day whose previous day has no flow.
+ * Spotting does not start a cycle and does not bridge one. */
+function cycleStartDates(){
+  const flow = allPeriodDates().filter(d=>{
+    const p = loadPeriodDay(d);
+    return p && p.flow && p.flow !== 'spotting' && p.flow !== 'none';
+  });
+  const flowSet = new Set(flow);
+  return flow.filter(d=>{
+    const prev = new Date(d+'T12:00:00'); prev.setDate(prev.getDate()-1);
+    return !flowSet.has(prev.toISOString().split('T')[0]);
+  }).sort();
+}
+
+function computeCycleCorrelations(){
+  const starts = cycleStartDates();
+  if(starts.length < 2) return {ok:false, starts:starts.length};
+
+  const dayMs = 86400000;
+  const startTimes = starts.map(d => new Date(d+'T12:00:00').getTime());
+  const lastCycleEnd = Date.now();
+
+  // symptom index -> array of cycle days
+  const bySym = new Map();
+  let mapped = 0;
+
+  for(const day of allDays()){
+    const t = new Date(day.date+'T12:00:00').getTime();
+    // which cycle does this day fall in? the latest start at or before it
+    let si = -1;
+    for(let i=0;i<startTimes.length;i++){ if(startTimes[i] <= t) si = i; else break; }
+    if(si < 0) continue;                       // before the first recorded cycle
+    const cycleEnd = (si+1 < startTimes.length) ? startTimes[si+1] : lastCycleEnd;
+    if(t >= cycleEnd) continue;
+    const cycleDay = Math.floor((t - startTimes[si]) / dayMs) + 1;
+    if(cycleDay < 1 || cycleDay > 60) continue;  // guard against bad data
+
+    for(const ev of (day.events||[])){
+      if(!bySym.has(ev.sym)) bySym.set(ev.sym, []);
+      bySym.get(ev.sym).push(cycleDay);
+      mapped++;
+    }
+  }
+
+  const evenShare = 1 / CYCLE_WINDOWS.length;
+  const findings = [];
+
+  for(const [sym, days] of bySym){
+    if(days.length < CYCLE_MIN_EVENTS) continue;
+    const counts = CYCLE_WINDOWS.map(w => days.filter(d => d >= w.lo && d <= w.hi).length);
+    const total = counts.reduce((a,b)=>a+b,0);
+    if(!total) continue;
+    let bi = 0;
+    for(let i=1;i<counts.length;i++) if(counts[i] > counts[bi]) bi = i;
+    const share = counts[bi] / total;
+    if(share < evenShare * CYCLE_PEAK_RATIO) continue;   // too flat to call
+    findings.push({
+      sym,
+      label: (SYMS[sym]||{}).label || 'Unknown',
+      icon:  (SYMS[sym]||{}).icon  || '•',
+      window: CYCLE_WINDOWS[bi].label,
+      inWindow: counts[bi],
+      total,
+      share,
+    });
+  }
+
+  findings.sort((a,b)=> (b.share - a.share) || (b.total - a.total));
+  return {ok:true, cycles: starts.length - 1, mapped, findings};
+}
+
+function renderCycleCorrelation(){
+  const card = document.getElementById('cyclePatternsCard');
+  const body = document.getElementById('cyclePatternsBody');
+  if(!card || !body) return;
+  if(typeof allPeriodDates !== 'function'){ card.style.display='none'; return; }
+
+  const res = computeCycleCorrelations();
+  card.style.display = 'block';
+
+  if(!res.ok){
+    const need = 2 - res.starts;
+    body.innerHTML = `
+      <div class="cap-empty">
+        <div class="cap-empty-icon">🩸</div>
+        <div class="cap-empty-text">
+          <strong>Log ${need} more period start${need!==1?'s':''}</strong> to see how your symptoms line up with your cycle.
+          <div class="cap-empty-sub">Needs at least two recorded periods — patterns are measured between one start and the next.</div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  if(!res.findings.length){
+    body.innerHTML = `
+      <div class="cap-empty">
+        <div class="cap-empty-icon">🔍</div>
+        <div class="cap-empty-text">
+          <strong>No clear pattern yet.</strong>
+          <div class="cap-empty-sub">Across ${res.cycles} cycle${res.cycles!==1?'s':''} and ${res.mapped} logged event${res.mapped!==1?'s':''}, nothing clusters strongly enough to call. Keep logging — this fills in on its own.</div>
+        </div>
+      </div>`;
+    return;
+  }
+
+  const rows = res.findings.slice(0,5).map(f=>`
+    <div class="cyc-row">
+      <div class="cyc-sym">${f.icon} ${escHtml(f.label)}</div>
+      <div class="cyc-detail">
+        clustered on <b>${f.window}</b>
+        <span class="cyc-n">${f.inWindow} of ${f.total} logged</span>
+      </div>
+    </div>`).join('');
+
+  body.innerHTML = rows + `
+    <p class="cyc-note">Based on ${res.cycles} recorded cycle${res.cycles!==1?'s':''}.
+    This describes what you logged — not a forecast, and not medical advice.</p>`;
+}
+
+function escHtml(s){
+  return String(s).replace(/[&<>"']/g, c =>
+    ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
