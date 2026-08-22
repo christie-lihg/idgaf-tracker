@@ -1,0 +1,28 @@
+{
+  "summary": "Regression smoke test after removal of .env-blocking lines (25-27) from /app/.gitignore. Static PWA loads cleanly at the public URL. Title=IDGAF Tracker, no console errors. Backend /api/health returns 200 with status:ok. Nav via showView() works for today/dashboard/period/history. All 9 required data-testid elements present. Empty timeline and empty dashboard contain no 🌿. Cycle-view copy verified via HTML grep (index.html:413 contains both 'Surfing the Crimson Wave' and 'Aunt Flo, meet the dashboard.'). save-wellness persists today's day key. add-custom-rating modal opens. No JS/CSS/HTML changes shipped this iteration — behavior unchanged from iteration_1.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {"ui_bugs": [], "integration_issues": [], "design_issues": []},
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "Nav tabs still lack data-testid (unchanged from iteration_1). Consider adding data-testid=nav-{today,dashboard,cycle,history} to reduce reliance on page.evaluate(\"showView(...)\") in Playwright tests."
+  ],
+  "verified_smoke_matrix": {
+    "title": "PASS — 'IDGAF Tracker'",
+    "console_errors_on_load": "PASS — none",
+    "backend_health": "PASS — GET /api/health -> 200 {status:'ok', app:'idgaf-tracker'}",
+    "nav_showView": "PASS — today/dashboard/period/history all switch",
+    "data_testid_present": "PASS — save-wellness-btn, streak-pill, reminder-settings-toggle, add-custom-rating-btn, history-search, share-qr-btn, provider-sections, export-data-btn, backup-banner all found",
+    "no_leaf_empty_states": "PASS — empty timeline and empty dashboard contain no 🌿",
+    "cycle_copy": "PASS — index.html:413 contains 'Surfing the Crimson Wave. ... Aunt Flo, meet the dashboard.'",
+    "save_wellness_persists": "PASS — idgaf_day_2026-08-22 written to localStorage after click",
+    "custom_rating_modal": "PASS — opens on add-custom-rating-btn click (Name/Emoji fields visible, Save Rating button present)",
+    "share_qr_button_present": "PASS"
+  },
+  "updated_files": [],
+  "success_rate": {"frontend": "100%"},
+  "seed_data_creation": "None — smoke-level verification only. Notification API stubbed via add_init_script.",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Only /app/.gitignore was modified this iteration (removed 3 .env-related patterns). Runtime behavior is unchanged from iteration_1. If deeper feature testing is needed again, follow iteration_1 patterns: nav via page.evaluate(\"showView(...)\"), seed days at idgaf_day_YYYY-MM-DD, custom rating values under day.customWellness[id]. Deployment agent already reports PASS — the app is deploy-ready."
+}
