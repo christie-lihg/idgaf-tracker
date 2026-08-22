@@ -1,4 +1,4 @@
-# 🌿 IDGAF Tracker
+# IDGAF Tracker
 
 ### How many f#$%s do you have left to give?
 

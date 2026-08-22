@@ -1,4 +1,9 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="192" height="192">
-  <rect width="192" height="192" rx="42" fill="#2d5016"/>
-  <text x="96" y="128" font-size="104" text-anchor="middle" font-family="system-ui, -apple-system, 'Apple Color Emoji', sans-serif">🌿</text>
+  <rect x="4" y="4" width="184" height="184" rx="42" fill="#FFFDF6" stroke="#12102B" stroke-width="7"/>
+  <g font-family="'Fredoka','SF Pro Rounded','Arial Black',system-ui,sans-serif" font-weight="900"
+     text-anchor="middle" fill="#12102B">
+    <text x="96" y="92"  font-size="54">IDG</text>
+    <text x="96" y="140" font-size="54">AF</text>
+  </g>
+  <rect x="52" y="152" width="88" height="9" fill="#FF2D78"/>
 </svg>

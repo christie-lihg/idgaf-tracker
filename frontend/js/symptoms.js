@@ -19,7 +19,7 @@ const SYMS = [
   {icon:'😮‍💨',label:'Breathing difficulty',group:'Physical'},
   {icon:'🥶',label:'Tingling / numbness',group:'Physical'},
   {icon:'💗',label:'Low libido',group:'Sexual'},
-  {icon:'🌿',label:'Vaginal dryness',group:'Sexual'},
+  {icon:'🏜',label:'Vaginal dryness',group:'Sexual'},
   {icon:'🚽',label:'Urinary urgency',group:'Urinary'},
   {icon:'👂',label:'Itchy ears',group:'Physical'},
   {icon:'🫧',label:'Allergic reaction',group:'Physical'},

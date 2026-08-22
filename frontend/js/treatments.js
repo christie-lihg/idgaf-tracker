@@ -23,7 +23,7 @@ const TREATMENTS_KEY = STORE_PREFIX + 'treatments';
 const TREATMENT_KINDS = [
   { id: 'hrt',       label: 'HRT / hormone',  icon: '💊' },
   { id: 'med',       label: 'Medication',     icon: '🩹' },
-  { id: 'supp',      label: 'Supplement',     icon: '🌿' },
+  { id: 'supp',      label: 'Supplement',     icon: '🧴' },
   { id: 'lifestyle', label: 'Lifestyle',      icon: '🏃' },
 ];
 
