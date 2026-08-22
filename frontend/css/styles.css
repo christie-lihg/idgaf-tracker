@@ -720,3 +720,47 @@ input[type=text],textarea,.note-input{
 .tx-imp-thin{font-size:12px;color:var(--muted);line-height:1.6}
 .tx-imp-n{font-size:11px;color:var(--muted);margin-top:3px}
 .tx-note{margin-top:12px;font-size:11px;color:var(--muted);line-height:1.55}
+
+/* ── Triggers ─────────────────────────────────────────────────────── */
+.trg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:9px}
+.trg-tile{display:flex;align-items:center;gap:9px;padding:11px 12px;cursor:pointer;
+  background:var(--surface);border:2.5px solid var(--border);border-radius:9px;
+  font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;color:var(--text);
+  text-align:left;box-shadow:3px 3px 0 var(--border);
+  transition:transform .06s ease,box-shadow .06s ease,background .12s ease}
+.trg-tile:hover{background:var(--mint)}
+.trg-tile:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--border)}
+.trg-tile.on{background:var(--amber);box-shadow:inset 2px 2px 0 rgba(0,0,0,.28),2px 2px 0 var(--border)}
+.trg-ico{font-size:17px;flex-shrink:0}
+.trg-lbl{line-height:1.25}
+
+.trg-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:9px 0;border-bottom:1px dashed var(--border)}
+.trg-row:last-of-type{border-bottom:none}
+.trg-row-name{font-weight:700;font-size:13px}
+.trg-row-val{font-size:13px;color:var(--text2);text-align:right}
+.trg-worse b{color:var(--rose)}
+.trg-better b{color:var(--sage)}
+.trg-n{display:block;font-size:10px;color:var(--muted);margin-top:1px}
+
+/* ── Symptom direction ────────────────────────────────────────────── */
+.dir-row{display:flex;align-items:baseline;justify-content:space-between;gap:12px;
+  padding:8px 0;border-bottom:1px dashed var(--border)}
+.dir-row:last-of-type{border-bottom:none}
+.dir-name{font-weight:700;font-size:13px}
+.dir-val{font-size:13px;text-align:right;color:var(--text2)}
+.dir-up b{color:var(--rose)}
+.dir-down b{color:var(--sage)}
+.dir-flat b{color:var(--muted)}
+.dir-n{display:block;font-size:10px;color:var(--muted);margin-top:1px}
+
+/* ── Notes search ─────────────────────────────────────────────────── */
+.notes-input{width:100%;padding:10px 12px;font-size:13px;margin-bottom:12px;
+  border:2.5px solid var(--border)!important;border-radius:7px;background:var(--surface2);
+  font-family:'Space Grotesk',sans-serif;font-weight:500;color:var(--text)}
+.notes-count{font-size:11px;color:var(--muted);margin:0 0 8px}
+.note-row{padding:9px 0;border-bottom:1px dashed var(--border)}
+.note-row:last-child{border-bottom:none}
+.note-date{font-size:11px;font-weight:700;color:var(--forest);margin-bottom:2px}
+.note-text{font-size:13px;color:var(--text2);line-height:1.55;white-space:pre-wrap}
+.note-text mark{background:var(--amber);color:var(--text);padding:0 2px;border-radius:3px}

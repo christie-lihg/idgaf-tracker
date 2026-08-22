@@ -150,6 +150,12 @@ function renderDashboard(){
   // Before/after each logged treatment change
   if(typeof renderTreatmentImpact==='function') renderTreatmentImpact();
 
+  // Trigger patterns, long-range trends, per-symptom direction, notes
+  if(typeof renderTriggerInsight==='function')    renderTriggerInsight();
+  if(typeof renderSixMonthTrend==='function')     renderSixMonthTrend();
+  if(typeof renderSymptomDirections==='function') renderSymptomDirections();
+  if(typeof renderNotesSearch==='function')       renderNotesSearch();
+
   // Custom rating sparklines (extras.js). Auto-hides when the user has
   // no custom ratings defined.
   if(typeof renderCustomRatingSparklines==='function') renderCustomRatingSparklines();

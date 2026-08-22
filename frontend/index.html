@@ -49,6 +49,8 @@
 <script defer src="js/custom-ratings.js"></script>
 <script defer src="js/share-qr.js"></script>
 <script defer src="js/extras.js"></script>
+<script defer src="js/triggers.js"></script>
+<script defer src="js/trends.js"></script>
 <script defer src="js/treatments.js"></script>
 <script defer src="js/init.js"></script>
 <script defer src="js/register-sw.js"></script>
@@ -436,6 +438,14 @@
     </div>
   </div>
 
+    <div class="card" id="triggersCard">
+      <div class="ch">
+        <div class="ch-icon">🍷</div>
+        <div><h3>What set it off?</h3><p>Tick anything that applied today — the dashboard works out which ones track with worse days.</p></div>
+      </div>
+      <div class="cb"><div class="trg-grid" id="triggerGrid"></div></div>
+    </div>
+
     <div class="card" id="treatmentsCard">
       <div class="ch">
         <div class="ch-icon">💊</div>
@@ -552,6 +562,45 @@
         <div><h3>Did it help?</h3><p>What shifted after each change you logged</p></div>
       </div>
       <div class="cb" id="txImpactBody"></div>
+    </div>
+
+    <div class="card" id="triggerInsightCard" style="display:none">
+      <div class="ch">
+        <div class="ch-icon">🍷</div>
+        <div><h3>Trigger patterns</h3><p>Days with each trigger versus days without</p></div>
+      </div>
+      <div class="cb" id="triggerInsightBody"></div>
+    </div>
+
+    <div class="card" id="sixMonthCard" style="display:none">
+      <div class="ch">
+        <div class="ch-icon">📈</div>
+        <div><h3>The last six months</h3><p>The timescale perimenopause actually moves on</p></div>
+      </div>
+      <div class="cb">
+        <div id="sixMonthBody"></div>
+        <div class="chart-wrap"><canvas id="chartSixMonth"></canvas></div>
+      </div>
+    </div>
+
+    <div class="card" id="symDirCard" style="display:none">
+      <div class="ch">
+        <div class="ch-icon">↕️</div>
+        <div><h3>What's rising, what's easing</h3><p>Each symptom, last 30 days versus the 30 before</p></div>
+      </div>
+      <div class="cb" id="symDirBody"></div>
+    </div>
+
+    <div class="card" id="notesSearchCard">
+      <div class="ch">
+        <div class="ch-icon">📓</div>
+        <div><h3>Search your notes</h3><p>Everything you've written, findable</p></div>
+      </div>
+      <div class="cb">
+        <input type="text" id="notesQuery" class="notes-input" placeholder="Search notes… e.g. wine, headache, meeting"
+               oninput="renderNotesSearch()" data-testid="notes-search">
+        <div id="notesSearchBody"></div>
+      </div>
     </div>
 
     <!-- Custom rating sparklines (auto-hidden when user has none) -->
