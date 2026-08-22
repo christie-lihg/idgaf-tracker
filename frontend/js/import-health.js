@@ -14,7 +14,7 @@
 //
 // WHAT WE READ
 //   <Record type="HKCategoryTypeIdentifierMenstrualFlow"
-//           startDate="2025-07-04 08:00:00 -0500"
+//           startDate="2024-01-15 08:00:00 -0500"
 //           value="HKCategoryValueMenstrualFlowLight" />
 //   and HKCategoryTypeIdentifierIntermenstrualBleeding for spotting.
 //
