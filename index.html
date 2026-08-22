@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>IDGAF Tracker</title>
+<!--
+  The app lives in frontend/ (the layout Emergent expects). Without this file,
+  Jekyll renders README.md as the site index, so anyone visiting the repo's
+  GitHub Pages URL lands on a readme instead of the app. This redirects them.
+
+  meta refresh first so it works with JS disabled; the script makes it instant.
+-->
+<meta http-equiv="refresh" content="0; url=./frontend/">
+<link rel="canonical" href="./frontend/">
+<script>location.replace('./frontend/' + location.search + location.hash);</script>
+<style>
+  body{font-family:system-ui,sans-serif;background:#FFFDF6;color:#12102B;
+       display:flex;min-height:100vh;align-items:center;justify-content:center;margin:0}
+  a{color:#6C2BD9}
+</style>
+</head>
+<body>
+  <p>Opening <a href="./frontend/">IDGAF Tracker</a>…</p>
+</body>
+</html>
