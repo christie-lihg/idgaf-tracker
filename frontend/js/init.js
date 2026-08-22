@@ -2,7 +2,6 @@
 // INIT
 // ═══════════════════════════════════════════════════════════════
 migrateLegacyKeys();          // must run before anything reads storage
-importHistoricalPeriodData();
 renderToday();
 if(typeof initTreatmentForm==='function') initTreatmentForm();
 if(typeof renderTriggerGrid==='function') renderTriggerGrid();

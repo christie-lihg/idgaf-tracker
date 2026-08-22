@@ -764,3 +764,14 @@ input[type=text],textarea,.note-input{
 .note-date{font-size:11px;font-weight:700;color:var(--forest);margin-bottom:2px}
 .note-text{font-size:13px;color:var(--text2);line-height:1.55;white-space:pre-wrap}
 .note-text mark{background:var(--amber);color:var(--text);padding:0 2px;border-radius:3px}
+
+/* ── Apple Health import ──────────────────────────────────────────── */
+.hi-steps{margin:0 0 14px;padding-left:20px;font-size:13px;color:var(--text2);line-height:1.75}
+.hi-steps code{background:var(--surface2);border:1.5px solid var(--border);border-radius:4px;padding:0 4px;font-size:12px}
+.hi-status{margin-top:12px;font-size:13px;color:var(--text2);line-height:1.6}
+.hi-preview{border:2.5px solid var(--border);border-radius:9px;background:var(--surface2);
+  padding:13px;box-shadow:3px 3px 0 var(--border)}
+.hi-breakdown{font-size:12px;color:var(--muted);margin-top:3px}
+.hi-warn{margin:9px 0 11px;font-size:12px;color:var(--text)}
+.hi-preview .btn{margin-right:8px}
+.hi-note{margin-top:12px;font-size:11px;color:var(--muted);line-height:1.55}

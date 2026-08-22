@@ -413,7 +413,26 @@
 <!-- ═══ PERIOD / CYCLE ════════════════════════════════════════════════════════ -->
 <div class="view" id="view-period">
 <div class="container">
-  <div class="pt"><h2>Cycle Tracker</h2><p>Surfing the Crimson Wave. Tap any day to log flow — Aunt Flo, meet the dashboard.</p></div>
+  <div class="pt"><h2>Cycle Tracker</h2><p>Surfing the Crimson Wave. Tap any day to log flow — Aunt Flo, meet the dashboard.</p>
+    <div class="card" id="healthImportCard">
+      <div class="ch">
+        <div class="ch-icon">🍎</div>
+        <div><h3>Import from Apple Health</h3><p>Bring your existing period history across</p></div>
+      </div>
+      <div class="cb">
+        <ol class="hi-steps">
+          <li>On your iPhone: <b>Health</b> → tap your photo (top right) → <b>Export All Health Data</b></li>
+          <li>Unzip the file it makes — <code>export.xml</code> is inside</li>
+          <li>Pick that file here</li>
+        </ol>
+        <input type="file" id="healthFile" accept=".xml,text/xml" style="display:none" onchange="handleHealthFile(event)">
+        <button class="btn btn-primary" onclick="triggerHealthImport()">Choose export.xml</button>
+        <div id="healthImportStatus" class="hi-status"></div>
+        <p class="hi-note">The file is read on your device and never uploaded. Days you've already
+        logged yourself are never overwritten.</p>
+      </div>
+    </div>
+</div>
 
   <div class="cycle-stats" id="cycleStats">
     <div class="cstat"><div class="cstat-val" id="csCycleLen">—</div><div class="cstat-lbl">Avg cycle length</div></div>
