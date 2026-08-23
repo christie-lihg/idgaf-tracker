@@ -51,6 +51,9 @@
 <script defer src="js/extras.js"></script>
 <script defer src="js/triggers.js"></script>
 <script defer src="js/trends.js"></script>
+<script defer src="js/reactions.js"></script>
+<script defer src="js/correlations.js"></script>
+<script defer src="js/onboarding.js"></script>
 <script defer src="js/treatments.js"></script>
 <script defer src="js/init.js"></script>
 <script defer src="js/register-sw.js"></script>
@@ -289,6 +292,10 @@
         <span>Ping me if I haven't logged by</span>
         <input type="time" id="reminderTime" data-testid="reminder-time" value="20:00" onchange="saveReminderTime(event)">
       </label>
+      <div class="reminder-days-row">
+        <span class="rd-label">On these days</span>
+        <div class="rd-days" id="reminderDays"></div>
+      </div>
       <p class="reminder-msg" id="reminderPermMsg" data-testid="reminder-perm-msg"></p>
     </div>
   </details>
@@ -335,6 +342,10 @@
       <div><h3>Tap when it hits</h3><p>Real-time symptom log. Multiple taps = multiple occurrences. Just do it.</p></div>
     </div>
     <div class="cb">
+        <div class="rx-wrap">
+          <div class="rx-q">How was today, overall?</div>
+          <div class="rx-row-tiles" id="reactionRow"></div>
+        </div>
       <div class="sym-grid" id="symGrid"></div>
     </div>
   </div>
@@ -575,6 +586,22 @@
       <div class="cb" id="cyclePatternsBody"></div>
     </div>
 
+    <div class="card" id="corrCard" style="display:none">
+      <div class="ch">
+        <div class="ch-icon">🔗</div>
+        <div><h3>Symptoms that travel together</h3><p>Pairs showing up on the same day more than chance explains</p></div>
+      </div>
+      <div class="cb" id="corrBody"></div>
+    </div>
+
+    <div class="card" id="reactionCard" style="display:none">
+      <div class="ch">
+        <div class="ch-icon">🫠</div>
+        <div><h3>How the month felt</h3><p>Your one-tap read on each day</p></div>
+      </div>
+      <div class="cb" id="reactionBody"></div>
+    </div>
+
     <div class="card" id="txImpactCard" style="display:none">
       <div class="ch">
         <div class="ch-icon">💊</div>
@@ -685,6 +712,11 @@
     </div>
   </div>
 </div>
+</div>
+
+
+<div class="ob-overlay" id="onboardOverlay">
+  <div class="ob-card" id="onboardBody" role="dialog" aria-modal="true" aria-label="Welcome"></div>
 </div>
 
 </body>

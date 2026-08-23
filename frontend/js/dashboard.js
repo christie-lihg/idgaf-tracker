@@ -147,6 +147,12 @@ function renderDashboard(){
   // Symptom clustering across the menstrual cycle
   renderCycleCorrelation();
 
+  // Symptom pairs that co-occur more than chance
+  if(typeof renderSymptomCorrelations==='function') renderSymptomCorrelations();
+
+  // One-tap daily reaction distribution
+  if(typeof renderReactionChart==='function') renderReactionChart();
+
   // Before/after each logged treatment change
   if(typeof renderTreatmentImpact==='function') renderTreatmentImpact();
 

@@ -5,3 +5,5 @@ migrateLegacyKeys();          // must run before anything reads storage
 renderToday();
 if(typeof initTreatmentForm==='function') initTreatmentForm();
 if(typeof renderTriggerGrid==='function') renderTriggerGrid();
+if(typeof renderReactionRow==='function') renderReactionRow();
+if(typeof maybeShowOnboarding==='function') maybeShowOnboarding();

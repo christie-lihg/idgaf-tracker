@@ -52,6 +52,44 @@ function renderStreakPill(){
 const REMINDER_KEY_ENABLED = STORE_PREFIX + 'reminder_enabled';
 const REMINDER_KEY_TIME    = STORE_PREFIX + 'reminder_time_hhmm';
 const REMINDER_KEY_FIRED   = STORE_PREFIX + 'reminder_last_fired';
+/* Which weekdays the reminder is allowed to fire on. Seven characters,
+   Sunday first, matching JS getDay(): '1' = on, '0' = off. Stored as a
+   string rather than an array so it stays readable in an export and can
+   never arrive as a sparse or out-of-order list. Absent = every day, so
+   anyone who set a reminder before this existed keeps what they had. */
+const REMINDER_KEY_DAYS    = STORE_PREFIX + 'reminder_days';
+const REMINDER_DAY_LABELS  = ['S','M','T','W','T','F','S'];
+const REMINDER_DAY_NAMES   = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+
+function reminderDays(){
+  const raw = localStorage.getItem(REMINDER_KEY_DAYS);
+  return (raw && /^[01]{7}$/.test(raw)) ? raw : '1111111';
+}
+function toggleReminderDay(i){
+  const cur = reminderDays().split('');
+  cur[i] = cur[i] === '1' ? '0' : '1';
+  const next = cur.join('');
+  // never let every day be switched off — that is a disabled reminder
+  // wearing an enabled toggle, and the user gets no feedback about why
+  // nothing ever fires. Turning the last one off turns the reminder off.
+  if(next === '0000000'){
+    localStorage.setItem(REMINDER_KEY_ENABLED, '0');
+    localStorage.setItem(REMINDER_KEY_DAYS, '1111111');
+    showToast('All days off — reminder switched off.');
+  } else {
+    localStorage.setItem(REMINDER_KEY_DAYS, next);
+  }
+  renderReminderUI();
+}
+function renderReminderDays(){
+  const el = document.getElementById('reminderDays');
+  if(!el) return;
+  const d = reminderDays(), enabled = localStorage.getItem(REMINDER_KEY_ENABLED)==='1';
+  el.innerHTML = REMINDER_DAY_LABELS.map((lbl,i) => `
+    <button class="rd-day${d[i]==='1'?' on':''}" onclick="toggleReminderDay(${i})"
+            ${enabled?'':'disabled'} data-testid="reminder-day-${i}"
+            aria-pressed="${d[i]==='1'}" aria-label="${REMINDER_DAY_NAMES[i]}">${lbl}</button>`).join('');
+}
 
 function reminderStatus(){
   return {
@@ -62,6 +100,7 @@ function reminderStatus(){
 }
 
 function renderReminderUI(){
+  renderReminderDays();
   const st=reminderStatus();
   const tog=document.getElementById('reminderToggle');
   const time=document.getElementById('reminderTime');
@@ -106,6 +145,7 @@ function maybeFireReminder(){
   try{
     const st=reminderStatus();
     if(!st.enabled) return;
+    if(reminderDays()[new Date().getDay()] !== '1') return;   // not a chosen weekday
     if(typeof Notification==='undefined' || Notification.permission!=='granted') return;
 
     const pad=n=>String(n).padStart(2,'0');
