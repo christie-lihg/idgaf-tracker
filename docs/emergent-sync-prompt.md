@@ -30,6 +30,10 @@ Paste the block below into Emergent as a single message.
 > frontend/js/triggers.js
 > frontend/js/trends.js
 > frontend/js/treatments.js
+> frontend/js/correlations.js
+> frontend/js/onboarding.js
+> frontend/js/reactions.js
+> frontend/js/extras.js
 > frontend/js/dashboard.js
 > frontend/js/symptoms.js
 > frontend/index.html
@@ -45,7 +49,9 @@ Paste the block below into Emergent as a single message.
 > ```
 >
 > Notes:
-> - `triggers.js`, `trends.js` and `treatments.js` are new files.
+> - `triggers.js`, `trends.js`, `treatments.js`, `correlations.js`,
+>   `onboarding.js` and `reactions.js` are new files. `extras.js` is an
+>   edit to your existing file (weekday selection on the reminder).
 > - The root `index.html` is a redirect to `frontend/`, not the app itself.
 > - Download the three PNGs in **binary mode** (`curl -o`, or `wb`) — do not pipe
 >   them through text handling and do not regenerate them.
@@ -67,7 +73,7 @@ Paste the block below into Emergent as a single message.
 > 1. `grep -c "{start:'" frontend/js/import-health.js` → must be **0**
 > 2. `grep -c "importHistoricalPeriodData" frontend/js/init.js` → must be **0**
 > 3. `grep -c 'type="module"' frontend/index.html` → must be **1**
-> 4. `grep CACHE_VERSION frontend/sw.js` → should read `idgaf-tracker-v23`
+> 4. `grep CACHE_VERSION frontend/sw.js` → should read `idgaf-tracker-v25`
 >
 > Then open the app, confirm no console errors and that all four views render,
 > and deploy.
@@ -87,6 +93,10 @@ Paste the block below into Emergent as a single message.
 | **Symptom direction** | last 30 days vs the 30 before, per symptom |
 | **Notes search** | notes were write-only; now findable |
 | **New icon** | stacked IDGAF wordmark, no leaf |
+| **Symptom correlations** | pairs co-occurring more than chance explains, scored by lift |
+| **First-run onboarding** | 3 slides on an empty profile — what it is, privacy, the doctor summary |
+| **Day reactions** | one-tap "how was today", six levels, plus a 30-day distribution |
+| **Reminder weekdays** | pick which days the daily reminder may fire |
 
 ## Why assertion 1 matters most
 
