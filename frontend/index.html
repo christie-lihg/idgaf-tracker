@@ -81,7 +81,7 @@
 <div class="modal-overlay" id="pastModal">
   <div class="modal">
     <div class="modal-head">
-      <h3>Log a past day</h3>
+      <h3>Be kind, rewind</h3>
       <button class="modal-close" onclick="closePastModal()">✕</button>
     </div>
     <div class="modal-body">
@@ -354,7 +354,7 @@
   <div class="card">
     <div class="ch">
       <div class="ch-icon">🕐</div>
-      <div><h3>Today's timeline</h3><p id="tlCount">No events yet</p></div>
+      <div><h3>The play-by-play</h3><p id="tlCount">No events yet</p></div>
       <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="clearToday()">Clear</button>
     </div>
     <div class="cb" id="timeline">
@@ -428,7 +428,7 @@
     <div class="card" id="healthImportCard">
       <div class="ch">
         <div class="ch-icon">🍎</div>
-        <div><h3>Import from Apple Health</h3><p>Bring your existing period history across</p></div>
+        <div><h3>Import your back catalogue</h3><p>Pull your period history out of Apple Health</p></div>
       </div>
       <div class="cb">
         <ol class="hi-steps">
@@ -479,7 +479,7 @@
     <div class="card" id="treatmentsCard">
       <div class="ch">
         <div class="ch-icon">💊</div>
-        <div><h3>What changed</h3><p>Started something, stopped something, changed a dose? Log the day.</p></div>
+        <div><h3>New kid on the block</h3><p>Started something, stopped something, changed a dose? Log the day.</p></div>
       </div>
       <div class="cb">
         <div class="tx-form">
@@ -560,11 +560,11 @@
     <!-- Event frequency + wellness trends -->
     <div class="two-col">
       <div class="card">
-        <div class="ch"><div class="ch-icon">📈</div><div><h3>Daily event count</h3><p>Total symptoms logged per day</p></div></div>
+        <div class="ch"><div class="ch-icon">📈</div><div><h3>The daily damage</h3><p>Total symptoms logged per day</p></div></div>
         <div class="cb"><div class="cw"><canvas id="chartEvents"></canvas></div></div>
       </div>
       <div class="card">
-        <div class="ch"><div class="ch-icon">🌡</div><div><h3>Wellness trends</h3><p>Energy, mood, sleep — from daily ratings</p></div></div>
+        <div class="ch"><div class="ch-icon">🌡</div><div><h3>Mood ring</h3><p>Energy, mood, sleep — from daily ratings</p></div></div>
         <div class="cb"><div class="cw"><canvas id="chartWellness"></canvas></div></div>
       </div>
     </div>
@@ -573,7 +573,7 @@
     <div class="card" id="capacityInsightCard" style="display:none">
       <div class="ch">
         <div class="ch-icon">🫠</div>
-        <div><h3>Capacity insight</h3><p>How much you had left on your worst days versus your best</p></div>
+        <div><h3>Serenity now</h3><p>How much you had left on your worst days versus your best</p></div>
       </div>
       <div class="cb" id="capacityInsightBody"></div>
     </div>
@@ -581,7 +581,7 @@
     <div class="card" id="cyclePatternsCard" style="display:none">
       <div class="ch">
         <div class="ch-icon">🩸</div>
-        <div><h3>Cycle patterns</h3><p>Which symptoms cluster where in your cycle</p></div>
+        <div><h3>The truth is out there</h3><p>Which symptoms cluster where in your cycle</p></div>
       </div>
       <div class="cb" id="cyclePatternsBody"></div>
     </div>
@@ -589,7 +589,7 @@
     <div class="card" id="corrCard" style="display:none">
       <div class="ch">
         <div class="ch-icon">🔗</div>
-        <div><h3>Symptoms that travel together</h3><p>Pairs showing up on the same day more than chance explains</p></div>
+        <div><h3>Rollin&rsquo; with the homies</h3><p>Pairs showing up on the same day more than chance explains</p></div>
       </div>
       <div class="cb" id="corrBody"></div>
     </div>
@@ -597,7 +597,7 @@
     <div class="card" id="reactionCard" style="display:none">
       <div class="ch">
         <div class="ch-icon">🫠</div>
-        <div><h3>How the month felt</h3><p>Your one-tap read on each day</p></div>
+        <div><h3>This month's mixtape</h3><p>Your one-tap read on each day, last 30 days</p></div>
       </div>
       <div class="cb" id="reactionBody"></div>
     </div>
@@ -605,7 +605,7 @@
     <div class="card" id="txImpactCard" style="display:none">
       <div class="ch">
         <div class="ch-icon">💊</div>
-        <div><h3>Did it help?</h3><p>What shifted after each change you logged</p></div>
+        <div><h3>Two thumbs up?</h3><p>What shifted after each change you logged</p></div>
       </div>
       <div class="cb" id="txImpactBody"></div>
     </div>
@@ -613,7 +613,7 @@
     <div class="card" id="triggerInsightCard" style="display:none">
       <div class="ch">
         <div class="ch-icon">🍷</div>
-        <div><h3>Trigger patterns</h3><p>Days with each trigger versus days without</p></div>
+        <div><h3>The usual suspects</h3><p>Days with each trigger versus days without</p></div>
       </div>
       <div class="cb" id="triggerInsightBody"></div>
     </div>
@@ -621,7 +621,7 @@
     <div class="card" id="sixMonthCard" style="display:none">
       <div class="ch">
         <div class="ch-icon">📈</div>
-        <div><h3>The last six months</h3><p>The timescale perimenopause actually moves on</p></div>
+        <div><h3>The long play</h3><p>The timescale perimenopause actually moves on</p></div>
       </div>
       <div class="cb">
         <div id="sixMonthBody"></div>
@@ -632,7 +632,7 @@
     <div class="card" id="symDirCard" style="display:none">
       <div class="ch">
         <div class="ch-icon">↕️</div>
-        <div><h3>What's rising, what's easing</h3><p>Each symptom, last 30 days versus the 30 before</p></div>
+        <div><h3>Tale of the tape</h3><p>Each symptom, last 30 days versus the 30 before</p></div>
       </div>
       <div class="cb" id="symDirBody"></div>
     </div>
@@ -640,7 +640,7 @@
     <div class="card" id="notesSearchCard">
       <div class="ch">
         <div class="ch-icon">📓</div>
-        <div><h3>Search your notes</h3><p>Everything you've written, findable</p></div>
+        <div><h3>Ask Jeeves</h3><p>Everything you've written, findable</p></div>
       </div>
       <div class="cb">
         <input type="text" id="notesQuery" class="notes-input" placeholder="Search notes… e.g. wine, headache, meeting"
@@ -654,13 +654,13 @@
 
     <!-- Top symptoms this week -->
     <div class="card">
-      <div class="ch"><div class="ch-icon">🔝</div><div><h3>Most frequent this week</h3><p>Ranked by number of logged events</p></div></div>
+      <div class="ch"><div class="ch-icon">🔝</div><div><h3>This week's countdown</h3><p>Ranked by number of logged events</p></div></div>
       <div class="cb" id="topSymptoms"></div>
     </div>
 
     <!-- Time-of-day pattern -->
     <div class="card">
-      <div class="ch"><div class="ch-icon">🕐</div><div><h3>Time-of-day pattern</h3><p>When symptoms tend to peak</p></div></div>
+      <div class="ch"><div class="ch-icon">🕐</div><div><h3>Prime time</h3><p>When symptoms tend to peak</p></div></div>
       <div class="cb"><div class="cw"><canvas id="chartTOD"></canvas></div></div>
     </div>
 
@@ -700,7 +700,7 @@
   <div class="card">
     <div class="ch">
       <div class="ch-icon">💾</div>
-      <div><h3>Data</h3><p>Export every log to a JSON file, or import one back in</p></div>
+      <div><h3>Save your game</h3><p>Export every log to a JSON file, or import one back in</p></div>
     </div>
     <div class="cb">
       <div class="data-actions">
