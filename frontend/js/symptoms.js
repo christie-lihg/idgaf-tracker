@@ -42,7 +42,7 @@ const WELLNESS_ITEMS = [
   {label:'Sleep Quality',       icon:'😴', clinicalLabel:'Sleep quality'},
   {label:'Brain Clarity',       icon:'🧠', clinicalLabel:'Brain clarity'},
   {label:'Hot Flash Severity',  icon:'🔥', clinicalLabel:'Hot flash severity'},
-  {label:'Fucks left to give',  icon:'🫠', clinicalLabel:'Capacity (self-rated 0–10)', prompt:'How many did you have left today?'},
+  {label:'F#$%s left to give', icon:'🫠', clinicalLabel:'Capacity (self-rated 0–10)', prompt:'How many did you have left today?'},
 ];
 
 // ═══════════════════════════════════════════════════════════════

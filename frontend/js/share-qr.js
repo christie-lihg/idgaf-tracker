@@ -142,7 +142,7 @@ function copySharePassphrase(){
 
 /* Print a paper handout with QR + passphrase side-by-side. Same rule as
  * printWeeklySummary(): the clinician gets the clinical register — the
- * playful "Fucks left to give" label never appears here because we pull
+ * playful "F#$%s left to give" label never appears here because we pull
  * from #weeklySummaryText, which uses clinicalLabel by design. */
 function printSharePayload(){
   if(!_sharePayload) return;

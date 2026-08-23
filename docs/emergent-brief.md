@@ -51,9 +51,9 @@ is doing double duty as guardrails for exactly this.
 >
 > Build two features:
 >
-> **A. Capacity rating — "Fucks left to give".** Add a sixth daily rating
+> **A. Capacity rating — "F#$%s left to give".** Add a sixth daily rating
 > alongside the existing five in `WELLNESS_ITEMS` (append only). In the app UI
-> it is labelled **"Fucks left to give"**, 0–10, icon 🫠, with the prompt "How
+> it is labelled **"F#$%s left to give"**, 0–10, icon 🫠, with the prompt "How
 > many did you have left today?". It must appear in the end-of-day wellness
 > card exactly like the others, persist to the same `wellness` object, and
 > appear in the dashboard's wellness-trends chart as a sixth series using a new
