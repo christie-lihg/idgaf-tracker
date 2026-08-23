@@ -1,9 +1,20 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" width="512" height="512">
   <rect x="4" y="4" width="184" height="184" rx="42" fill="#FFFDF6" stroke="#12102B" stroke-width="7"/>
+  <g opacity="0.32">
+    <polygon points="27,22 39,33 15,33" fill="#FF2D78" transform="rotate(18 27 28)"/>
+    <circle cx="163" cy="29" r="9" fill="#00D9D9"/>
+    <circle cx="23" cy="100" r="8" fill="none" stroke="#6C2BD9" stroke-width="5"/>
+    <rect x="156" y="82" width="26" height="6" rx="3" fill="#FF2D78" transform="rotate(38 169 85)"/>
+    <polygon points="167,148 179,159 155,159" fill="#6C2BD9" transform="rotate(-22 167 154)"/>
+    <circle cx="31" cy="159" r="8" fill="#FFC42E"/>
+    <rect x="45" y="22" width="26" height="6" rx="3" fill="#00D9D9" transform="rotate(-28 58 25)"/>
+    <circle cx="134" cy="58" r="8" fill="#FF2D78"/>
+  </g>
   <g font-family="'Fredoka','SF Pro Rounded','Arial Black',system-ui,sans-serif" font-weight="900"
      text-anchor="middle" fill="#12102B">
-    <text x="96" y="92"  font-size="54">IDG</text>
-    <text x="96" y="140" font-size="54">AF</text>
+    <text x="96" y="88"  font-size="52">IDG</text>
+    <text x="96" y="134" font-size="52">AF</text>
   </g>
-  <rect x="52" y="152" width="88" height="9" fill="#FF2D78"/>
+  <polyline points="52,155 74,143 96,155 118,143 140,155" fill="none" stroke="#FFC42E"
+            stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
 </svg>
