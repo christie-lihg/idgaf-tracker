@@ -90,10 +90,10 @@ async function openShareQrModal(){
   }
 
   const origin=location.origin + location.pathname.replace(/[^/]*$/, '');
-  // Some hosts (Cloudflare, some static hosts) 301-redirect `.html` → clean
-  // path and drop URL fragments in the process, which would destroy the
-  // ciphertext. Point straight at the clean path.
-  const qrUrl=`${origin}share#${packed}`;
+  // Use `share.html` (not `/share`): GitHub Pages serves .html files directly
+  // but has no clean-URL rewrite, while Cloudflare/Emergent do a 301 to /share
+  // and preserve the URL fragment across the redirect. Works on both hosts.
+  const qrUrl=`${origin}share.html#${packed}`;
 
   _sharePayload={qrUrl, passphrase, summaryPreview:txt};
   document.getElementById('sharePassText').textContent=passphrase;

@@ -851,3 +851,11 @@ input[type=text],textarea,.note-input{
 .rd-day.on{background:var(--leaf);color:var(--border)}
 .rd-day:active:not(:disabled){transform:translate(2px,2px);box-shadow:0 0 0 var(--border)}
 .rd-day:disabled{opacity:.4;cursor:default;box-shadow:none}
+
+/* Ghost buttons that live OUTSIDE any .card sit directly on the memphis
+   confetti and become unreadable. The page-title (.pt) button row is the
+   main offender — "Log past day" and "See this week →". Give those a
+   translucent white plate matching the card translucency so they stay
+   legible without losing the retro-through pattern feel. */
+.pt .btn-ghost{background:rgba(255,255,255,.9);backdrop-filter:saturate(1.1) blur(1px)}
+.pt .btn-ghost:hover{background:rgba(255,255,255,1)}

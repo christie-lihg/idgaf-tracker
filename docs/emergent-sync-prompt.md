@@ -73,7 +73,7 @@ Paste the block below into Emergent as a single message.
 > 1. `grep -c "{start:'" frontend/js/import-health.js` → must be **0**
 > 2. `grep -c "importHistoricalPeriodData" frontend/js/init.js` → must be **0**
 > 3. `grep -c 'type="module"' frontend/index.html` → must be **1**
-> 4. `grep CACHE_VERSION frontend/sw.js` → should read `idgaf-tracker-v27`
+> 4. `grep CACHE_VERSION frontend/sw.js` → should read `idgaf-tracker-v28`
 >
 > Then open the app, confirm no console errors and that all four views render,
 > and deploy.
