@@ -1,28 +1,59 @@
 # Emergent sync prompt
 
-Emergent's GitHub integration is **one-directional** (Emergent → GitHub). There is
-no pull, so work done outside Emergent has to be brought in another way.
+## Read this before pasting anything (v2 — after two silent revert failures)
 
-The repo is public, so `raw.githubusercontent.com` serves every file directly.
-Rather than have the agent *reimplement* features from a description — paying
-credits to regenerate code that already exists and is tested — it just downloads
-them.
+Two prior attempts both reported success — all four verification greps passed —
+and the deployed app still shipped old content anyway, unmasked and missing
+weeks of features. The pattern both times: **files on disk were correct, but
+whatever Deploy actually ships from was not.**
 
-Paste the block below into Emergent as a single message.
+The likely cause: Emergent tracks project state through its own edit/checkpoint
+system (the thing that produces `"Auto-generated changes"` commits), separately
+from the raw container filesystem. A shell `curl` can write correct bytes to
+disk while never entering Emergent's own model of "what this project contains."
+Deploy then ships from that model, not from disk — and a later Emergent-side
+push to GitHub reverts to that model too, which is why masking and header
+commits kept vanishing from `main` after each sync.
+
+**So this version of the prompt does not use a bare shell fetch.** It tells the
+agent explicitly to make each downloaded file a real, tracked edit — through
+whatever file-write/edit tool it has, not shell redirection alone — and to
+checkpoint immediately after, before doing anything else, so Deploy has no
+ambiguity about what state to ship.
+
+If this run *also* reports success but the deployed app is still wrong, that
+confirms the tracking-layer theory beyond reasonable doubt, and the reliable
+path becomes the manual one: open the **Code** button (VS Code) in Emergent,
+open each file below yourself, and paste in the content from the matching
+GitHub URL by hand. Slower, but every keystroke goes through Emergent's own
+editor, so nothing can be invisible to it.
 
 ---
 
 ## The prompt
 
-> Download these files from my public GitHub repo and write them into this
-> project, replacing what is there. **Take them verbatim — do not rewrite,
-> reformat, "improve", or regenerate any of them.** They are already tested; your
-> job is transfer, not authorship. Do all of them in one pass; don't stop to check
-> in between files.
+Paste this into Emergent as a single message.
+
+> I need you to update several files in this project so they exactly match my
+> public GitHub repo. This has failed silently twice before: the verification
+> checks passed but the deployed app still showed old content, which means the
+> files were written somewhere your own change-tracking didn't see. Follow this
+> exactly.
 >
-> Base URL: `https://raw.githubusercontent.com/christie-lihg/idgaf-tracker/main/`
+> **For each file below:**
+> 1. Fetch it from `https://raw.githubusercontent.com/christie-lihg/idgaf-tracker/main/<path>`
+> 2. Open the destination file **using your normal file-editing capability** — the
+>    same mechanism you'd use if I asked you to edit the file directly. Do NOT
+>    write it only via a shell command like `curl -o` or `cat >`. If a shell
+>    fetch is the only way to retrieve the content, fetch it that way, then take
+>    the retrieved text and write it into the file through your file-edit tool
+>    as a **second, separate step** — the edit has to register as a real change
+>    to the project, not just a filesystem write.
+> 3. Replace the entire file content verbatim. Do not rewrite, reformat,
+>    "improve", or regenerate — the content is already tested; your job is
+>    transfer, not authorship.
 >
-> Each path below is both the download path (base URL + path) and the destination:
+> Files (path is identical on both sides — GitHub URL suffix and destination):
 >
 > ```
 > frontend/js/import-health.js
@@ -50,33 +81,43 @@ Paste the block below into Emergent as a single message.
 >
 > Notes:
 > - `triggers.js`, `trends.js`, `treatments.js`, `correlations.js`,
->   `onboarding.js` and `reactions.js` are new files. `extras.js` is an
->   edit to your existing file (weekday selection on the reminder).
+>   `onboarding.js` and `reactions.js` are new files.
 > - The root `index.html` is a redirect to `frontend/`, not the app itself.
-> - Download the three PNGs in **binary mode** (`curl -o`, or `wb`) — do not pipe
->   them through text handling and do not regenerate them.
-> - If a download returns stale content, append `?v=2` and retry;
->   raw.githubusercontent.com caches for a few minutes.
->
-> **Do not change anything else.** Specifically:
-> - Do not convert the scripts to ES modules. The markup uses ~45 inline
->   `onclick=` handlers that resolve against global scope; modules break every
->   button at click time with no error on load. `frontend/index.html` contains the
->   string `type="module"` exactly once, inside a comment warning against this —
->   that hit is expected, leave it.
+> - The three PNGs are binary — fetch and write them as binary, not through any
+>   text-mode tool.
+> - `frontend/index.html` contains the literal string `type="module"` exactly
+>   once, inside a comment warning against ever using it. That one hit is
+>   correct — leave it. Do not convert any `<script>` tag to a module: the
+>   markup uses ~45 inline `onclick=` handlers that resolve against global
+>   scope, and modules break every one of them at click time with no error on
+>   load.
 > - Do not rename any `idgaf_*` localStorage key.
-> - Do not reorder `SYMS` or `WELLNESS_ITEMS`; stored entries are keyed by array
->   position, so reordering silently relabels existing history.
+> - Do not reorder `SYMS` or `WELLNESS_ITEMS` in `symptoms.js` — stored entries
+>   are keyed by array position, so reordering silently relabels existing
+>   history.
 >
-> **Then verify and report these four:**
+> **After all 20 files are written, in this exact order:**
 >
-> 1. `grep -c "{start:'" frontend/js/import-health.js` → must be **0**
-> 2. `grep -c "importHistoricalPeriodData" frontend/js/init.js` → must be **0**
-> 3. `grep -c 'type="module"' frontend/index.html` → must be **1**
-> 4. `grep CACHE_VERSION frontend/sw.js` → should read `idgaf-tracker-v28`
->
-> Then open the app, confirm no console errors and that all four views render,
-> and deploy.
+> 1. Run these four checks and report the actual output of each, not just
+>    pass/fail:
+>    - `grep -c "{start:'" frontend/js/import-health.js` → must be **0**
+>    - `grep -c "importHistoricalPeriodData" frontend/js/init.js` → must be **0**
+>    - `grep -c 'type="module"' frontend/index.html` → must be **1**
+>    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v28`**
+> 2. Additionally run `grep -c "F#\$%s left to give" frontend/js/symptoms.js` →
+>    must be **1**. (This is the specific line that reverted last time — if
+>    this comes back 0, the sync did not take even if the other four passed.)
+> 3. **Explicitly save or checkpoint the project now**, before doing anything
+>    else — whatever action in your environment marks the current state as the
+>    one to build from. Tell me what you did for this step by name.
+> 4. Only after that checkpoint: open the app in your preview and confirm no
+>    console errors and all four views render.
+> 5. Deploy, in the same session, with no other actions in between steps 3 and
+>    this one.
+> 6. After deploying, fetch the LIVE deployed URL's `frontend/sw.js` (or
+>    `sw.js`, whichever resolves) yourself and paste back the `CACHE_VERSION`
+>    line it actually contains. I need to see that this matches v28 on the
+>    live site, not just in your workspace.
 
 ---
 
@@ -97,11 +138,20 @@ Paste the block below into Emergent as a single message.
 | **First-run onboarding** | 3 slides on an empty profile — what it is, privacy, the doctor summary |
 | **Day reactions** | one-tap "how was today", six levels, plus a 30-day distribution |
 | **Reminder weekdays** | pick which days the daily reminder may fire |
+| **Masked label** | the capacity slider reads "F#$%s left to give", not spelled out |
+| **90s headers** | eighteen card titles rewritten as period references |
+| **Ghost-button fix** | Emergent's own fix, folded back in — legible over the confetti |
+| **Cross-host QR URL** | Emergent's own fix — works on GitHub Pages and behind Emergent's redirect |
 
-## Why assertion 1 matters most
+## If this still doesn't work
 
-The current `import-health.js` in the deployed app contains one person's real
-menstrual history hardcoded in source, and `init.js` runs it on first load — so
-every new user receives that history preloaded and the Cycle tab shows those
-stats as their own. If the agent reports anything other than **0** for assertions
-1 and 2, the fix did not land and nothing else matters.
+Do the manual copy. In Emergent, click **Code** (opens VS Code). For each file in
+the list above, open it and replace its contents by hand with what's at
+`https://github.com/christie-lihg/idgaf-tracker/blob/main/<path>` (use the "Raw"
+button on GitHub for plain text to copy). Slower — twenty files — but every
+change goes through Emergent's own editor, which removes the one variable that
+has failed twice: a write path invisible to its tracking.
+
+If even that doesn't survive a deploy, the platform itself has a state-tracking
+bug beyond what a prompt can route around, and Emergent support is the next
+step, not another prompt rewrite.
