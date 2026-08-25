@@ -36,7 +36,14 @@ function buildMorningCard(){
       const el=document.createElement('div');
       el.className='on-item'+(checked?' checked':'');
       el.id='on_'+i;
+      // it behaves like a toggle button, so announce it as one — the
+      // selected state is otherwise carried only by colour, which a
+      // screen reader cannot see and some users cannot distinguish
+      el.setAttribute('role','button');
+      el.setAttribute('tabindex','0');
+      el.setAttribute('aria-pressed', checked ? 'true' : 'false');
       el.onclick=()=>toggleOvernightItem(i);
+      el.onkeydown=(e)=>{ if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleOvernightItem(i); } };
       el.innerHTML=`<div class="on-check">${checked?'✓':''}</div><div class="on-icon">${item.icon}</div><div class="on-label">${item.label}</div>`;
       grid.appendChild(el);
     });

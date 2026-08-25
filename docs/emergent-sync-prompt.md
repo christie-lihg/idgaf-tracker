@@ -111,8 +111,8 @@ Paste this into Emergent as a single message.
 >    - `grep -c "F#\$%s left to give" frontend/js/symptoms.js` → must be **1**
 >    - `grep -c "safe-area-inset" frontend/css/styles.css` → must be **8**
 >    - `grep -c "nt-ico" frontend/index.html` → must be **4**
->    - `wc -c < frontend/css/styles.css` → must be **57162**
->    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v29`**
+>    - `wc -c < frontend/css/styles.css` → must be **59018**
+>    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v31`**
 >
 >    If ANY of these is wrong, the sync is incomplete. Do not deploy. Re-fetch
 >    the specific file that failed and re-check before continuing.

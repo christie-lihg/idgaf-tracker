@@ -915,3 +915,39 @@ input[type=text],textarea,.note-input{
   .ch{padding:12px 13px 10px}
   .pt h2{font-size:20px}
 }
+
+/* ── Overnight checklist as tap tiles on phones ────────────────────
+   .on-grid is minmax(180px,1fr). On a 375px screen about 325px is
+   usable, so two 180px columns cannot fit and it collapses to a single
+   column: twelve full-width rows, an enormous amount of scrolling for
+   the first thing you touch each morning.
+
+   Below 640px they become two-up tiles matching .trg-tile, which is the
+   same interaction (multi-select toggle) and was already tiles. The
+   check mark stays visible rather than relying on background colour
+   alone, so the selected state is not carried by colour by itself. */
+@media (max-width:640px){
+  .on-grid{grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:14px}
+  .on-item{
+    position:relative;
+    flex-direction:column;align-items:flex-start;gap:5px;
+    padding:10px 9px;min-height:66px;
+    border:2.5px solid var(--border);border-radius:9px;
+    background:var(--surface);box-shadow:2px 2px 0 var(--border);
+    transition:transform .06s ease,box-shadow .06s ease,background .12s ease;
+  }
+  .on-item:active{transform:translate(2px,2px);box-shadow:0 0 0 var(--border)}
+  .on-item.checked{
+    background:var(--amber);border-color:var(--border);
+    box-shadow:inset 2px 2px 0 rgba(0,0,0,.24),2px 2px 0 var(--border);
+  }
+  .on-icon{font-size:20px;line-height:1}
+  .on-label{font-size:11px;line-height:1.25;font-weight:600;color:var(--text)}
+  .on-item.checked .on-label{color:var(--text)}
+  /* No tick box. The tile IS the control, exactly like .trg-tile, and the
+     selected state is already carried by two non-colour cues: aria-pressed
+     for screen readers, and the shadow inverting to an inset so the tile
+     reads as physically pressed in. A checkbox on top of that is redundant
+     furniture on a 44px-wide target. */
+  .on-check{display:none}
+}
