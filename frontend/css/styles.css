@@ -859,3 +859,59 @@ input[type=text],textarea,.note-input{
    legible without losing the retro-through pattern feel. */
 .pt .btn-ghost{background:rgba(255,255,255,.9);backdrop-filter:saturate(1.1) blur(1px)}
 .pt .btn-ghost:hover{background:rgba(255,255,255,1)}
+
+/* ══════════════════════════════════════════════════════════════════════
+   PHONE
+   Two separate bugs, fixed together.
+
+   1. SAFE AREAS. index.html sets viewport-fit=cover, which lets the page
+      extend under the notch, status bar and home indicator. That is only
+      correct if you then pad by the safe-area insets — otherwise the fixed
+      nav sits underneath the clock and signal icons, which is exactly what
+      it was doing. env() resolves to 0px on hardware without insets, so
+      these are inert on desktop.
+
+   2. NAV OVERFLOW. Measured at 375px: the four text tabs totalled 370px
+      and the document scrolled to 454px, a 79px overflow. On a desktop
+      window that clips; on a real phone the page pans sideways and the
+      last tab lands off-screen, which is what made zooming out necessary.
+      Below 640px the tabs collapse to 44px icon squares — 44px being the
+      minimum comfortable touch target — dropping the row to ~194px.
+   ══════════════════════════════════════════════════════════════════════ */
+
+.nav{
+  height:calc(var(--nav) + env(safe-area-inset-top, 0px));
+  padding-top:env(safe-area-inset-top, 0px);
+  padding-left:max(20px, env(safe-area-inset-left, 0px));
+  padding-right:max(20px, env(safe-area-inset-right, 0px));
+}
+.view{padding-top:calc(var(--nav) + env(safe-area-inset-top, 0px) + 20px)}
+/* keep the last card clear of the home indicator */
+.container{padding-bottom:calc(48px + env(safe-area-inset-bottom, 0px))}
+
+@media (max-width:640px){
+  .nav{
+    padding-left:max(12px, env(safe-area-inset-left, 0px));
+    padding-right:max(12px, env(safe-area-inset-right, 0px));
+  }
+  .nav-brand{margin-right:8px}
+  .nav-name{display:none}
+
+  /* square icon tabs — the label is carried by aria-label/title */
+  .nav-tabs{flex:0 1 auto;margin-left:auto;gap:6px}
+  .nav-tab{
+    width:44px;height:44px;padding:0;flex-shrink:0;
+    display:flex;align-items:center;justify-content:center;
+    font-size:19px;line-height:1;letter-spacing:0;
+    border:2px solid rgba(255,255,255,.30);
+  }
+  .nav-tab.active{border-color:var(--border)}
+  .nt-lbl{display:none}
+  .nt-ico{font-size:19px;line-height:1}
+
+  /* tighter gutters so cards get more of the narrow screen */
+  .container{padding-left:12px;padding-right:12px}
+  .cb{padding:14px 13px}
+  .ch{padding:12px 13px 10px}
+  .pt h2{font-size:20px}
+}

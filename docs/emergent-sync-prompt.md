@@ -103,7 +103,7 @@ Paste this into Emergent as a single message.
 >    - `grep -c "{start:'" frontend/js/import-health.js` → must be **0**
 >    - `grep -c "importHistoricalPeriodData" frontend/js/init.js` → must be **0**
 >    - `grep -c 'type="module"' frontend/index.html` → must be **1**
->    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v28`**
+>    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v29`**
 > 2. Additionally run `grep -c "F#\$%s left to give" frontend/js/symptoms.js` →
 >    must be **1**. (This is the specific line that reverted last time — if
 >    this comes back 0, the sync did not take even if the other four passed.)
