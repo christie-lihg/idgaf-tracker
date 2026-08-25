@@ -116,7 +116,7 @@ Paste this into Emergent as a single message.
 >    this one.
 > 6. After deploying, fetch the LIVE deployed URL's `frontend/sw.js` (or
 >    `sw.js`, whichever resolves) yourself and paste back the `CACHE_VERSION`
->    line it actually contains. I need to see that this matches v28 on the
+>    line it actually contains. I need to see that this matches v29 on the
 >    live site, not just in your workspace.
 
 ---
@@ -142,6 +142,7 @@ Paste this into Emergent as a single message.
 | **90s headers** | eighteen card titles rewritten as period references |
 | **Ghost-button fix** | Emergent's own fix, folded back in — legible over the confetti |
 | **Cross-host QR URL** | Emergent's own fix — works on GitHub Pages and behind Emergent's redirect |
+| **Phone fixes** | safe-area insets so the nav clears the status bar; nav tabs become 44px icon squares below 640px (was overflowing 79px) |
 
 ## If this still doesn't work
 
