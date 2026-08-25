@@ -359,3 +359,86 @@ function escapeHtml(s){
 }
 
 // ═══════════════════════════════════════════════════════════════
+
+/* ───── COLLAPSIBLE CARDS ────────────────────────────────────────────
+   Every card on the Today view folds away, the same way the morning
+   check-in already does. Today is a long scroll and on most days you
+   only want one or two sections open; folding the rest is the difference
+   between logging something and scrolling past it.
+
+   Wired up at runtime instead of in the markup, so any card added to the
+   view later gets the behaviour for free — there is no per-card HTML to
+   remember and nothing to keep in sync.
+
+   State is keyed by the card's heading text, not its position. Position
+   keys silently reassign every saved state the moment a card is added or
+   reordered, which would fold the wrong sections. Renaming a heading
+   just resets that one card to open, which is a harmless miss. */
+const COLLAPSE_KEY = STORE_PREFIX + 'collapsed_v1';
+
+function loadCollapsedCards(){
+  try{
+    const o = JSON.parse(localStorage.getItem(COLLAPSE_KEY) || '{}');
+    return (o && typeof o === 'object' && !Array.isArray(o)) ? o : {};
+  }catch{ return {}; }
+}
+
+function setCardCollapsed(card, collapsed, persist){
+  const head = card.querySelector(':scope > .ch');
+  card.classList.toggle('collapsed', collapsed);
+  if(!head) return;
+  head.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  if(!persist) return;
+  const map = loadCollapsedCards();
+  if(collapsed) map[head.dataset.cardKey] = 1;
+  else delete map[head.dataset.cardKey];
+  localStorage.setItem(COLLAPSE_KEY, JSON.stringify(map));
+}
+
+function toggleCard(card){
+  setCardCollapsed(card, !card.classList.contains('collapsed'), true);
+}
+
+function initCollapsibleCards(){
+  const state = loadCollapsedCards();
+
+  document.querySelectorAll('.view .card').forEach(card => {
+    const head = card.querySelector(':scope > .ch');
+    const body = card.querySelector(':scope > .cb');
+    if(!head || !body || head.dataset.cardKey) return;
+
+    // Skip anything holding a chart. Chart.js measures the canvas when it
+    // builds, and a canvas inside a display:none card measures 0 — the
+    // chart would come back blank on expand with no resize event to fix
+    // it. Not worth the plumbing; charts are the one thing you open the
+    // dashboard to look at anyway.
+    if(card.querySelector('canvas')) return;
+
+    const h3  = head.querySelector('h3');
+    const key = h3 ? h3.textContent.trim() : '';
+    if(!key) return;
+
+    head.dataset.cardKey = key;
+    head.setAttribute('role', 'button');
+    head.setAttribute('tabindex', '0');
+
+    const chev = document.createElement('div');
+    chev.className = 'ch-chevron';
+    chev.setAttribute('aria-hidden', 'true');
+    chev.textContent = '▼';
+    head.appendChild(chev);
+
+    setCardCollapsed(card, !!state[key], false);
+
+    head.addEventListener('click', e => {
+      // Some headers carry a real control (End-of-day has a Save button).
+      // Folding the card out from under a tap on one of those would be
+      // the single most annoying thing this feature could do.
+      if(e.target.closest('button,a,input,select,textarea,label')) return;
+      toggleCard(card);
+    });
+    head.addEventListener('keydown', e => {
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); toggleCard(card); }
+    });
+  });
+}

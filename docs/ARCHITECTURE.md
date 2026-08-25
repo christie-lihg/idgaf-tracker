@@ -111,6 +111,14 @@ app's storage if the two ever shared an origin. Enumerate what you own.
 > reordering entries in `SYMS` silently relabels every historical event. Only ever
 > **append** to `SYMS`. If you must remove a symptom, tombstone it rather than
 > splicing it out.
+>
+> The same applies to `wellness` keys and `WELLNESS_ITEMS`. To retire an input,
+> set `retired: true` on the entry and drop its markup — never splice the array.
+> `WELLNESS_ITEMS[2]` (Sleep Quality) is retired this way: the morning check-in
+> asks it now, so nothing new writes `wellness[2]`, but the slot has to stay or
+> every historical Brain Clarity value silently becomes a Sleep Quality value.
+> Anything that *reads* sleep quality should prefer `morning.sleepQuality` and
+> fall back to `wellness[2]` for older days — see `js/dashboard.js`.
 
 ### `idgaf_morning_YYYY-MM-DD`
 

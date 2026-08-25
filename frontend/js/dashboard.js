@@ -72,17 +72,24 @@ function renderDashboard(){
     }
   });
 
-  // Wellness chart — all 6 series, capacity uses the new --chart5 token
+  // Wellness chart — all 6 series, capacity uses the new --chart5 token.
+  // Sleep is the odd one out: it is asked in the MORNING check-in, not in
+  // the end-of-day sliders, so it reads morning.sleepQuality and falls back
+  // to the historical wellness[2] for days logged before that slider went.
   const wellnessDatasets=[
-    {label:'Energy',color:themeColor('chart1')},
-    {label:'Mood',color:themeColor('chart2')},
-    {label:'Sleep',color:themeColor('chart3')},
-    {label:'Clarity',color:themeColor('chart4')},
-    {label:'Hot flash',color:themeColor('amber')},
-    {label:'Capacity',color:themeColor('chart5')},
-  ].map((item,i)=>({
+    {label:'Energy',   color:themeColor('chart1'), read:d=>loadDay(d).wellness[0]},
+    {label:'Mood',     color:themeColor('chart2'), read:d=>loadDay(d).wellness[1]},
+    {label:'Sleep',    color:themeColor('chart3'), read:d=>{
+      const m=loadMorning(d);
+      return (m&&m.sleepQuality!==undefined&&m.sleepQuality!==null)
+        ? m.sleepQuality : loadDay(d).wellness[2];
+    }},
+    {label:'Clarity',  color:themeColor('chart4'), read:d=>loadDay(d).wellness[3]},
+    {label:'Hot flash',color:themeColor('amber'),  read:d=>loadDay(d).wellness[4]},
+    {label:'Capacity', color:themeColor('chart5'), read:d=>loadDay(d).wellness[5]},
+  ].map(item=>({
     label:item.label,
-    data:this7.map(d=>{const w=loadDay(d).wellness;return w[i]!==undefined?w[i]:null}),
+    data:this7.map(d=>{const v=item.read(d);return v!==undefined?v:null}),
     borderColor:item.color,backgroundColor:'transparent',
     borderWidth:2,tension:.35,pointRadius:4,
     spanGaps:true,fill:false
@@ -385,7 +392,10 @@ function buildWeeklySummary(days,agg){
 
   const avgE=agg.avgWellness[0]!==null?agg.avgWellness[0].toFixed(1):'not rated';
   const avgM=agg.avgWellness[1]!==null?agg.avgWellness[1].toFixed(1):'not rated';
-  const avgS=agg.avgWellness[2]!==null?agg.avgWellness[2].toFixed(1):'not rated';
+  // Prefer the morning check-in (where sleep quality is now asked); fall
+  // back to the retired end-of-day slider so older weeks still report.
+  const sleepSrc=agg.avgSleepQuality!==null?agg.avgSleepQuality:agg.avgWellness[2];
+  const avgS=(sleepSrc!==null&&sleepSrc!==undefined)?sleepSrc.toFixed(1):'not rated';
   const avgCap=agg.avgWellness[5]!==null&&agg.avgWellness[5]!==undefined?agg.avgWellness[5].toFixed(1):'not rated';
 
   let text=`Week of ${weekStart} – ${weekEnd}\n\n`;

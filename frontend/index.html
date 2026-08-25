@@ -320,11 +320,11 @@
       <div class="sleep-hours-row" id="sleepHoursRow"></div>
 
       <div class="morning-section-title">Sleep quality — ugh to yasss <span id="sleepQualVal" style="color:var(--forest);font-size:13px;font-weight:700"></span></div>
-      <div class="sli-row" style="margin-bottom:16px">
-        <div class="sli-lbl" style="color:var(--muted);font-size:11px">0 = Bogus</div>
+      <div class="sli-scale">
+        <span class="sli-scale-end">0 = Bogus</span>
         <input type="range" class="sli" id="sleepQualSlider" min="0" max="10" value="5"
           oninput="document.getElementById('sleepQualVal').textContent=this.value+'/10'">
-        <div class="sli-lbl" style="color:var(--muted);font-size:11px;text-align:right">10 = Da bomb</div>
+        <span class="sli-scale-end">10 = Da bomb</span>
       </div>
 
       <div class="morning-section-title">Anything else? Spill the tea.</div>
@@ -382,11 +382,6 @@
         <div class="sli-lbl">💭 Mood</div>
         <input type="range" class="sli" id="w1" min="0" max="10" value="5" oninput="document.getElementById('wv1').textContent=this.value">
         <div class="sli-val" id="wv1">5</div>
-      </div>
-      <div class="sli-row">
-        <div class="sli-lbl">😴 Sleep Quality</div>
-        <input type="range" class="sli" id="w2" min="0" max="10" value="5" oninput="document.getElementById('wv2').textContent=this.value">
-        <div class="sli-val" id="wv2">5</div>
       </div>
       <div class="sli-row">
         <div class="sli-lbl">🧠 Brain Clarity</div>

@@ -88,6 +88,14 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .ch h3{font-size:14px;font-weight:600;color:var(--forest)}
 .ch p{font-size:11px;color:var(--muted);margin-top:1px}
 .cb{padding:16px 18px}
+/* Collapsible cards (Today view). The chevron is appended by JS, so the
+   margin-left:auto has to survive a header that already has an auto-margin
+   button in it — flex gives the button its auto margin first, then this. */
+.ch[data-card-key]{cursor:pointer;-webkit-user-select:none;user-select:none}
+.ch-chevron{margin-left:auto;font-size:12px;color:var(--muted);flex-shrink:0;transition:transform .2s}
+.card.collapsed .ch-chevron{transform:rotate(-90deg)}
+.card.collapsed > .ch{border-bottom:none}
+.card.collapsed > .cb{display:none}
 
 /* BUTTONS */
 .btn{padding:11px 24px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Space Grotesk',sans-serif;transition:all .15s;border:none;letter-spacing:.02em}
@@ -202,6 +210,11 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .sli{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--rose) 0%,var(--amber) 40%,var(--leaf) 70%,var(--forest) 100%)}
 .sli::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--forest);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer}
 .sli-val{font-size:15px;font-weight:700;color:var(--forest);text-align:center}
+/* Scale row: "0 = Bogus [====slider====] 10 = Da bomb". NOT .sli-row —
+   that grid's third column is 32px, sized for a number, and a phrase
+   dropped into it wraps into a stack. auto|1fr|auto sizes to content. */
+.sli-scale{display:grid;grid-template-columns:auto 1fr auto;align-items:center;gap:10px;margin-bottom:16px}
+.sli-scale-end{font-size:11px;font-weight:600;color:var(--muted);white-space:nowrap}
 
 /* MORNING SUMMARY */
 .morning-card{background:var(--surface);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden;margin-bottom:16px;border:1.5px solid transparent;transition:border-color .2s}
@@ -239,8 +252,11 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 .morning-section-title{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;margin-top:4px}
 
 /* sleep hours bubbles */
-.sleep-hours-row{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}
-.sh-btn{width:38px;height:38px;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .15s;font-family:'Space Grotesk',sans-serif}
+/* Eight bubbles, always one line. flex-wrap put <4..10+ onto two rows on
+   any phone (8x38 + 7x6 = 346px into a ~317px card); equal grid columns
+   shrink to whatever width there is instead of wrapping. */
+.sleep-hours-row{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:5px;margin-bottom:14px}
+.sh-btn{width:100%;max-width:38px;justify-self:center;aspect-ratio:1;border-radius:50%;border:1.5px solid var(--border);background:var(--surface);font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--muted);transition:all .15s;font-family:'Space Grotesk',sans-serif}
 .sh-btn:hover{border-color:var(--sage);color:var(--sage)}
 .sh-btn.on{background:var(--forest);border-color:var(--forest);color:#fff}
 
@@ -930,8 +946,9 @@ input[type=text],textarea,.note-input{
   .on-grid{grid-template-columns:repeat(2,1fr);gap:7px;margin-bottom:14px}
   .on-item{
     position:relative;
-    flex-direction:column;align-items:flex-start;gap:5px;
-    padding:10px 9px;min-height:66px;
+    flex-direction:column;align-items:center;justify-content:center;
+    text-align:center;gap:5px;
+    padding:10px 8px;min-height:72px;
     border:2.5px solid var(--border);border-radius:9px;
     background:var(--surface);box-shadow:2px 2px 0 var(--border);
     transition:transform .06s ease,box-shadow .06s ease,background .12s ease;
@@ -942,7 +959,7 @@ input[type=text],textarea,.note-input{
     box-shadow:inset 2px 2px 0 rgba(0,0,0,.24),2px 2px 0 var(--border);
   }
   .on-icon{font-size:20px;line-height:1}
-  .on-label{font-size:11px;line-height:1.25;font-weight:600;color:var(--text)}
+  .on-label{font-size:11px;line-height:1.25;font-weight:600;color:var(--text);text-align:center}
   .on-item.checked .on-label{color:var(--text)}
   /* No tick box. The tile IS the control, exactly like .trg-tile, and the
      selected state is already carried by two non-colour cues: aria-pressed

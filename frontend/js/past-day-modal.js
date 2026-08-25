@@ -45,7 +45,9 @@ function openPastModal(date){
 
   // wellness sliders
   const ws=document.getElementById('pastWellnessSliders');
-  ws.innerHTML=WELLNESS_ITEMS.map((item,i)=>`
+  // Retired items are skipped, not dropped: the index still has to match
+  // the stored array position, so filter AFTER mapping, never before.
+  ws.innerHTML=WELLNESS_ITEMS.map((item,i)=>item.retired?'':`
     <div class="sli-row" style="margin-bottom:8px">
       <div class="sli-lbl">${item.icon} ${item.label}</div>
       <input type="range" class="sli" id="pw${i}" min="0" max="10" value="5" oninput="document.getElementById('pwv${i}').textContent=this.value">

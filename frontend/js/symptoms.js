@@ -39,7 +39,13 @@ const SYMS = [
 const WELLNESS_ITEMS = [
   {label:'Energy',              icon:'🔆', clinicalLabel:'Energy'},
   {label:'Mood',                icon:'💭', clinicalLabel:'Mood'},
-  {label:'Sleep Quality',       icon:'😴', clinicalLabel:'Sleep quality'},
+  // RETIRED as an input — the morning check-in already asks sleep quality,
+  // and asking twice a day produced two numbers for one night. The slot
+  // stays because stored entries are keyed by array POSITION: deleting it
+  // would relabel every historical Brain Clarity value as Sleep Quality.
+  // Existing wellness[2] values are still read by the chart and the doctor
+  // summary; nothing new is written here.
+  {label:'Sleep Quality',       icon:'😴', clinicalLabel:'Sleep quality', retired:true},
   {label:'Brain Clarity',       icon:'🧠', clinicalLabel:'Brain clarity'},
   {label:'Hot Flash Severity',  icon:'🔥', clinicalLabel:'Hot flash severity'},
   {label:'F#$%s left to give', icon:'🫠', clinicalLabel:'Capacity (self-rated 0–10)', prompt:'How many did you have left today?'},

@@ -111,8 +111,11 @@ Paste this into Emergent as a single message.
 >    - `grep -c "F#\$%s left to give" frontend/js/symptoms.js` → must be **1**
 >    - `grep -c "safe-area-inset" frontend/css/styles.css` → must be **8**
 >    - `grep -c "nt-ico" frontend/index.html` → must be **4**
->    - `wc -c < frontend/css/styles.css` → must be **59018**
->    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v31`**
+>    - `grep -c 'id="w2"' frontend/index.html` → must be **0**
+>    - `grep -c "sli-scale" frontend/index.html` → must be **3**
+>    - `grep -c "initCollapsibleCards" frontend/js/extras.js` → must be **1**
+>    - `wc -c < frontend/css/styles.css` → must be **60306**
+>    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v32`**
 >
 >    If ANY of these is wrong, the sync is incomplete. Do not deploy. Re-fetch
 >    the specific file that failed and re-check before continuing.
@@ -152,6 +155,10 @@ Paste this into Emergent as a single message.
 | **Ghost-button fix** | Emergent's own fix, folded back in — legible over the confetti |
 | **Cross-host QR URL** | Emergent's own fix — works on GitHub Pages and behind Emergent's redirect |
 | **Phone fixes** | safe-area insets so the nav clears the status bar; nav tabs become 44px icon squares below 640px (was overflowing 79px) |
+| **Overnight tiles** | the check-list became two-up tap tiles, icon and label centred, no tick box |
+| **Sleep row fixes** | the 0–10 scale labels sit either side of the slider instead of being crushed into a 32px column; the eight hour bubbles stay on one line |
+| **One sleep question** | the duplicate end-of-day Sleep Quality slider is gone — the morning check-in asks it, and the chart and doctor summary now read it from there |
+| **Collapsible cards** | every non-chart card folds shut, state remembered per card |
 
 ## If this still doesn't work
 
