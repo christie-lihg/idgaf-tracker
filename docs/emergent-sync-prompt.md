@@ -98,15 +98,24 @@ Paste this into Emergent as a single message.
 >
 > **After all 20 files are written, in this exact order:**
 >
-> 1. Run these four checks and report the actual output of each, not just
->    pass/fail:
+> 1. Run ALL of these and report the actual output of each, not just pass/fail.
+>    Each one probes a DIFFERENT file, because a partial sync is the failure
+>    mode that has already happened: on the last attempt `sw.js` synced and
+>    `styles.css` did not, so a version check alone passed while none of the
+>    actual fixes shipped. A version marker only ever proves that one small
+>    file arrived.
+>
 >    - `grep -c "{start:'" frontend/js/import-health.js` → must be **0**
 >    - `grep -c "importHistoricalPeriodData" frontend/js/init.js` → must be **0**
 >    - `grep -c 'type="module"' frontend/index.html` → must be **1**
+>    - `grep -c "F#\$%s left to give" frontend/js/symptoms.js` → must be **1**
+>    - `grep -c "safe-area-inset" frontend/css/styles.css` → must be **8**
+>    - `grep -c "nt-ico" frontend/index.html` → must be **4**
+>    - `wc -c < frontend/css/styles.css` → must be **57162**
 >    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v29`**
-> 2. Additionally run `grep -c "F#\$%s left to give" frontend/js/symptoms.js` →
->    must be **1**. (This is the specific line that reverted last time — if
->    this comes back 0, the sync did not take even if the other four passed.)
+>
+>    If ANY of these is wrong, the sync is incomplete. Do not deploy. Re-fetch
+>    the specific file that failed and re-check before continuing.
 > 3. **Explicitly save or checkpoint the project now**, before doing anything
 >    else — whatever action in your environment marks the current state as the
 >    one to build from. Tell me what you did for this step by name.
