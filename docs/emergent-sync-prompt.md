@@ -67,6 +67,8 @@ Paste this into Emergent as a single message.
 > frontend/js/extras.js
 > frontend/js/dashboard.js
 > frontend/js/symptoms.js
+> frontend/js/morning.js
+> frontend/js/past-day-modal.js
 > frontend/index.html
 > frontend/css/styles.css
 > frontend/sw.js
@@ -96,7 +98,7 @@ Paste this into Emergent as a single message.
 >   are keyed by array position, so reordering silently relabels existing
 >   history.
 >
-> **After all 20 files are written, in this exact order:**
+> **After all 23 files are written, in this exact order:**
 >
 > 1. Run ALL of these and report the actual output of each, not just pass/fail.
 >    Each one probes a DIFFERENT file, because a partial sync is the failure
@@ -104,6 +106,12 @@ Paste this into Emergent as a single message.
 >    `styles.css` did not, so a version check alone passed while none of the
 >    actual fixes shipped. A version marker only ever proves that one small
 >    file arrived.
+>
+>    Every file in the list above now has at least one assertion pointed at
+>    it. Keep it that way. `morning.js` and `past-day-modal.js` were being
+>    changed for two releases while sitting outside the list entirely, so a
+>    "successful" sync would have shipped tile styling with no tile
+>    behaviour behind it and nothing would have caught it.
 >
 >    - `grep -c "{start:'" frontend/js/import-health.js` → must be **0**
 >    - `grep -c "importHistoricalPeriodData" frontend/js/init.js` → must be **0**
@@ -114,6 +122,9 @@ Paste this into Emergent as a single message.
 >    - `grep -c 'id="w2"' frontend/index.html` → must be **0**
 >    - `grep -c "sli-scale" frontend/index.html` → must be **3**
 >    - `grep -c "initCollapsibleCards" frontend/js/extras.js` → must be **1**
+>    - `grep -c "aria-pressed" frontend/js/morning.js` → must be **1**
+>    - `grep -c "item.retired" frontend/js/past-day-modal.js` → must be **1**
+>    - `grep -c "read:d=>" frontend/js/dashboard.js` → must be **6**
 >    - `wc -c < frontend/css/styles.css` → must be **60306**
 >    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v32`**
 >
