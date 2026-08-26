@@ -1,126 +1,28 @@
-I need you to update several files in this project so they exactly match my
-public GitHub repo. This has failed silently twice before: the verification
-checks passed but the deployed app still showed old content, which means the
-files were written somewhere your own change-tracking didn't see. Follow this
-exactly.
+Two files changed since the last sync. Same rules as before: fetch the
+content, then write it through your normal file-editing tool as a real,
+tracked edit — not a shell redirect. Replace each file's contents verbatim,
+no rewriting or reformatting.
 
-**For each file below:**
-1. Fetch it from `https://raw.githubusercontent.com/christie-lihg/idgaf-tracker/main/<path>`
-2. Open the destination file **using your normal file-editing capability** — the
-   same mechanism you'd use if I asked you to edit the file directly. Do NOT
-   write it only via a shell command like `curl -o` or `cat >`. If a shell
-   fetch is the only way to retrieve the content, fetch it that way, then take
-   the retrieved text and write it into the file through your file-edit tool
-   as a **second, separate step** — the edit has to register as a real change
-   to the project, not just a filesystem write.
-3. Replace the entire file content verbatim. Do not rewrite, reformat,
-   "improve", or regenerate — the content is already tested; your job is
-   transfer, not authorship.
+  frontend/css/styles.css
+  frontend/sw.js
 
-Files (path is identical on both sides — GitHub URL suffix and destination):
+Fetch each from:
+  https://raw.githubusercontent.com/christie-lihg/idgaf-tracker/main/<path>
 
-```
-frontend/js/import-health.js
-frontend/js/init.js
-frontend/js/triggers.js
-frontend/js/trends.js
-frontend/js/treatments.js
-frontend/js/correlations.js
-frontend/js/onboarding.js
-frontend/js/reactions.js
-frontend/js/extras.js
-frontend/js/dashboard.js
-frontend/js/symptoms.js
-frontend/js/morning.js
-frontend/js/past-day-modal.js
-frontend/js/theme.js
-frontend/js/cycle.js
-frontend/js/today.js
-frontend/index.html
-frontend/css/styles.css
-frontend/sw.js
-frontend/icons/icon-192.png
-frontend/icons/icon-512.png
-frontend/icons/icon-512-maskable.png
-frontend/icons/icon-192.svg
-frontend/icons/icon-512.svg
-README.md
-index.html
-```
+Then run these and report the actual output of each:
 
-Notes:
-- `triggers.js`, `trends.js`, `treatments.js`, `correlations.js`,
-  `onboarding.js`, `reactions.js` and `theme.js` are new files.
-- `frontend/index.html` contains an INLINE `<script>` in `<head>`, before
-  the stylesheet link, that sets `data-theme`. It has to stay inline and
-  stay before the stylesheet: deferred or moved, the app flashes white on
-  every load, which is the exact moment the dark theme exists for.
-- `js/theme.js` must load BEFORE `js/init.js`. `init.js` executes at load
-  time and calls `initTheme()` behind a `typeof` guard, so the wrong order
-  fails silently rather than erroring.
-- The root `index.html` is a redirect to `frontend/`, not the app itself.
-- The three PNGs are binary — fetch and write them as binary, not through any
-  text-mode tool.
-- `frontend/index.html` contains the literal string `type="module"` exactly
-  once, inside a comment warning against ever using it. That one hit is
-  correct — leave it. Do not convert any `<script>` tag to a module: the
-  markup uses ~45 inline `onclick=` handlers that resolve against global
-  scope, and modules break every one of them at click time with no error on
-  load.
-- Do not rename any `idgaf_*` localStorage key.
-- Do not reorder `SYMS` or `WELLNESS_ITEMS` in `symptoms.js` — stored entries
-  are keyed by array position, so reordering silently relabels existing
-  history.
+  grep -c "runnable-track" frontend/css/styles.css     -> must be 1
+  grep -c "pointer:coarse" frontend/css/styles.css     -> must be 1
+  grep -c "background-clip:content-box" frontend/css/styles.css  -> must be 1
+  wc -c < frontend/css/styles.css                      -> must be 72170
+  grep CACHE_VERSION frontend/sw.js                    -> must read idgaf-tracker-v37
 
-**After all 26 files are written, in this exact order:**
+If any of those is wrong, do not deploy. Re-fetch the file that failed and
+re-check.
 
-1. Run ALL of these and report the actual output of each, not just pass/fail.
-   Each one probes a DIFFERENT file, because a partial sync is the failure
-   mode that has already happened: on the last attempt `sw.js` synced and
-   `styles.css` did not, so a version check alone passed while none of the
-   actual fixes shipped. A version marker only ever proves that one small
-   file arrived.
-
-   Every file in the list above now has at least one assertion pointed at
-   it. Keep it that way. `morning.js` and `past-day-modal.js` were being
-   changed for two releases while sitting outside the list entirely, so a
-   "successful" sync would have shipped tile styling with no tile
-   behaviour behind it and nothing would have caught it.
-
-   - `grep -c "{start:'" frontend/js/import-health.js` → must be **0**
-   - `grep -c "importHistoricalPeriodData" frontend/js/init.js` → must be **0**
-   - `grep -c 'type="module"' frontend/index.html` → must be **1**
-   - `grep -c "F#\$%s left to give" frontend/js/symptoms.js` → must be **1**
-   - `grep -c "safe-area-inset" frontend/css/styles.css` → must be **8**
-   - `grep -c "nt-ico" frontend/index.html` → must be **4**
-   - `grep -c 'id="w2"' frontend/index.html` → must be **0**
-   - `grep -c "sli-scale" frontend/index.html` → must be **3**
-   - `grep -c "initCollapsibleCards" frontend/js/extras.js` → must be **1**
-   - `grep -c "aria-pressed" frontend/js/morning.js` → must be **1**
-   - `grep -c "item.retired" frontend/js/past-day-modal.js` → must be **1**
-   - `grep -c "read:d=>" frontend/js/dashboard.js` → must be **6**
-   - `grep -c "nav-wordmark" frontend/index.html` → must be **1**
-   - `grep -c "nav-right" frontend/index.html` → must be **0**
-   - `grep -c "createElement('button')" frontend/js/today.js` → must be **1**
-   - `grep -c "focus-visible" frontend/css/styles.css` → must be **6**
-   - `grep -c "var(--on-bright)" frontend/css/styles.css` → must be **14**
-   - `grep -c 'data-theme="dark"' frontend/css/styles.css` → must be **12**
-   - `grep -c "<main" frontend/index.html` → must be **1**
-   - `grep -c "js/theme.js" frontend/sw.js` → must be **1**
-   - `grep -o -- "--muted:#[0-9a-f]*" frontend/css/styles.css | head -1` → must read **`--muted:#6b6394`**
-   - `wc -c < frontend/css/styles.css` → must be **70105**
-   - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v35`**
-
-   If ANY of these is wrong, the sync is incomplete. Do not deploy. Re-fetch
-   the specific file that failed and re-check before continuing.
-3. **Explicitly save or checkpoint the project now**, before doing anything
-   else — whatever action in your environment marks the current state as the
-   one to build from. Tell me what you did for this step by name.
-4. Only after that checkpoint: open the app in your preview and confirm no
-   console errors and all four views render.
-5. Deploy, in the same session, with no other actions in between steps 3 and
-   this one.
-6. After deploying, fetch the LIVE deployed URL's `frontend/sw.js` (or
-   `sw.js`, whichever resolves) yourself and paste back the `CACHE_VERSION`
-   line it actually contains. I need to see that this matches v35 on the
-   live site, not just in your workspace.
+Then, in this order:
+1. Explicitly save or checkpoint the project, and tell me by name what you did.
+2. Open the preview and confirm no console errors and all four views render.
+3. Deploy, in the same session, nothing in between.
+4. Fetch the LIVE deployed sw.js yourself and paste back the CACHE_VERSION
+   line it actually contains. It must say idgaf-tracker-v37.
