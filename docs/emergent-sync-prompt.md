@@ -144,8 +144,10 @@ Paste this into Emergent as a single message.
 >    - `grep -c "<main" frontend/index.html` → must be **1**
 >    - `grep -c "js/theme.js" frontend/sw.js` → must be **1**
 >    - `grep -o -- "--muted:#[0-9a-f]*" frontend/css/styles.css | head -1` → must read **`--muted:#6b6394`**
->    - `wc -c < frontend/css/styles.css` → must be **70105**
->    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v35`**
+>    - `grep -c "runnable-track" frontend/css/styles.css` → must be **1**
+>    - `grep -c "pointer:coarse" frontend/css/styles.css` → must be **1**
+>    - `wc -c < frontend/css/styles.css` → must be **72170**
+>    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v37`**
 >
 >    If ANY of these is wrong, the sync is incomplete. Do not deploy. Re-fetch
 >    the specific file that failed and re-check before continuing.
@@ -158,7 +160,7 @@ Paste this into Emergent as a single message.
 >    this one.
 > 6. After deploying, fetch the LIVE deployed URL's `frontend/sw.js` (or
 >    `sw.js`, whichever resolves) yourself and paste back the `CACHE_VERSION`
->    line it actually contains. I need to see that this matches v35 on the
+>    line it actually contains. I need to see that this matches v37 on the
 >    live site, not just in your workspace.
 
 ---

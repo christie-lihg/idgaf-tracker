@@ -267,9 +267,28 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 /* The painted track stays 5px; the HIT AREA becomes 44px. The element
    box was 5px tall, so a tap a few pixels high or low did nothing at all
    and the End-of-day card felt broken rather than missed. */
-.sli{-webkit-appearance:none;appearance:none;width:100%;height:5px;box-sizing:content-box;
-  padding:19px 0;background-clip:content-box;border-radius:3px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--rose) 0%,var(--amber) 40%,var(--leaf) 70%,var(--forest) 100%)}
-.sli::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:18px;height:18px;border-radius:50%;background:var(--forest);border:2px solid #fff;box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer}
+/* The element is the 44px HIT AREA and paints nothing; the visible 5px bar
+   is the track pseudo-element.
+   The previous attempt kept the gradient on the element and used
+   `background-clip:content-box` with vertical padding to hold the paint to
+   5px. Chrome honours that. Safari does not honour background-clip on a
+   range input with -webkit-appearance:none, so on an actual iPhone it
+   painted the whole 43px box and the slider became a rainbow slab. Styling
+   the track pseudo-element is the version that behaves the same in both. */
+.sli{-webkit-appearance:none;appearance:none;width:100%;height:44px;
+  background:transparent;outline:none;cursor:pointer;margin:0}
+.sli::-webkit-slider-runnable-track{
+  height:5px;border-radius:3px;
+  background:linear-gradient(to right,var(--rose) 0%,var(--amber) 40%,var(--leaf) 70%,var(--forest) 100%)}
+.sli::-moz-range-track{
+  height:5px;border-radius:3px;
+  background:linear-gradient(to right,var(--rose) 0%,var(--amber) 40%,var(--leaf) 70%,var(--forest) 100%)}
+.sli::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;box-sizing:border-box;
+  width:18px;height:18px;border-radius:50%;background:var(--forest);border:2px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);cursor:pointer;
+  margin-top:-6.5px}   /* centres the 18px thumb on the 5px track */
+.sli::-moz-range-thumb{box-sizing:border-box;width:18px;height:18px;border-radius:50%;
+  background:var(--forest);border:2px solid #fff;cursor:pointer}
 .sli-val{font-size:15px;font-weight:700;color:var(--forest-fg);text-align:center}
 /* Scale row: "0 = Bogus [====slider====] 10 = Da bomb". NOT .sli-row —
    that grid's third column is 32px, sized for a number, and a phrase
@@ -975,6 +994,25 @@ input[type=text],textarea,.note-input{
 .view{padding-top:calc(var(--nav) + env(safe-area-inset-top, 0px) + 20px)}
 /* keep the last card clear of the home indicator */
 .container{padding-bottom:calc(48px + env(safe-area-inset-bottom, 0px))}
+
+/* ── iOS AUTO-ZOOM ─────────────────────────────────────────────────────
+   Safari zooms the whole page in when you focus a form control whose
+   font-size is under 16px, and it does not zoom back out. Every text
+   control here was 12-13px, so tapping the notes field or the history
+   search left the app zoomed and panned sideways with the right edge cut
+   off. That is the same symptom as the nav overflow Christie hit weeks
+   ago, from a completely different cause, which is why the numeric
+   overflow probe never saw it: the layout is fine, the VIEWPORT moved.
+
+   16px on touch pointers only, so the desktop type scale is untouched. */
+@media (max-width:640px), (hover:none) and (pointer:coarse){
+  input[type="text"],input[type="search"],input[type="date"],input[type="number"],
+  input[type="time"],input[type="email"],input[type="tel"],
+  textarea,select,
+  .notes-area,.notes-input,.morning-note,.user-inp,.tx-form input[type=text]{
+    font-size:16px;
+  }
+}
 
 @media (max-width:640px){
   .nav{
