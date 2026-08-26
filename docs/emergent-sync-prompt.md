@@ -125,8 +125,10 @@ Paste this into Emergent as a single message.
 >    - `grep -c "aria-pressed" frontend/js/morning.js` → must be **1**
 >    - `grep -c "item.retired" frontend/js/past-day-modal.js` → must be **1**
 >    - `grep -c "read:d=>" frontend/js/dashboard.js` → must be **6**
->    - `wc -c < frontend/css/styles.css` → must be **60306**
->    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v32`**
+>    - `grep -c "nav-wordmark" frontend/index.html` → must be **1**
+>    - `grep -c "nav-right" frontend/index.html` → must be **0**
+>    - `wc -c < frontend/css/styles.css` → must be **61136**
+>    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v33`**
 >
 >    If ANY of these is wrong, the sync is incomplete. Do not deploy. Re-fetch
 >    the specific file that failed and re-check before continuing.
@@ -170,6 +172,7 @@ Paste this into Emergent as a single message.
 | **Sleep row fixes** | the 0–10 scale labels sit either side of the slider instead of being crushed into a 32px column; the eight hour bubbles stay on one line |
 | **One sleep question** | the duplicate end-of-day Sleep Quality slider is gone — the morning check-in asks it, and the chart and doctor summary now read it from there |
 | **Collapsible cards** | every non-chart card folds shut, state remembered per card |
+| **The app says its name** | the nav badge is the IDGAF wordmark instead of a ✦ that named nothing; "Tracker" beside it down to 370px; an empty `.nav-right` spacer that was holding 42px hostage is gone |
 
 ## If this still doesn't work
 

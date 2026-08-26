@@ -59,13 +59,20 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 /* NAV */
 .nav{position:fixed;top:0;left:0;right:0;z-index:100;height:var(--nav);background:var(--forest);display:flex;align-items:center;padding:0 20px;box-shadow:0 2px 12px rgba(0,0,0,.18)}
 .nav-brand{display:flex;align-items:center;gap:10px;margin-right:24px}
-.nav-logo{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.15);display:flex;align-items:center;justify-content:center;font-size:15px}
+/* The logo IS the wordmark. A symbol badge told a first-time visitor
+   nothing about what they had opened, and on a phone the name beside it
+   was hidden by two separate media queries -- so the top of the app
+   named itself nowhere. Putting the name IN the badge means it survives
+   every breakpoint; "Tracker" is the only part that can drop. */
+.nav-logo{height:34px;padding:0 10px;border-radius:9px;background:rgba(255,255,255,.15);
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;
+  letter-spacing:.6px;color:#fff;white-space:nowrap}
 .nav-name{font-family:'Fredoka',sans-serif;font-size:15px;font-weight:700;color:#fff;white-space:nowrap}
 .nav-tabs{display:flex;gap:2px;flex:1}
 .nav-tab{padding:8px 16px;border-radius:8px;font-size:13px;font-weight:500;color:rgba(255,255,255,.65);cursor:pointer;transition:all .15s;border:none;background:transparent;font-family:'Space Grotesk',sans-serif;white-space:nowrap}
 .nav-tab:hover{color:#fff;background:rgba(255,255,255,.1)}
 .nav-tab.active{color:#fff;background:rgba(255,255,255,.18)}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px}
 .user-chip{display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.12);border-radius:20px;padding:5px 12px 5px 8px}
 .user-av{width:26px;height:26px;border-radius:50%;background:var(--leaf);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff}
 .user-inp{background:transparent;border:none;outline:none;font-size:12px;font-weight:500;color:#fff;font-family:'Space Grotesk',sans-serif;width:90px}
@@ -271,7 +278,6 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--tex
 @media(max-width:640px){
   .kpi-row{grid-template-columns:repeat(2,1fr)}
   .two-col{grid-template-columns:1fr}
-  .nav-name{display:none}
   .nav-tab{padding:8px 10px;font-size:12px}
   .week-row{grid-template-columns:60px repeat(7,1fr)}
 }
@@ -392,7 +398,10 @@ body::before{
   letter-spacing:.5px;text-transform:uppercase;
   text-shadow:2px 2px 0 var(--rose);
 }
-.nav-logo{border:2.5px solid var(--border);background:var(--amber)}
+.nav-logo{
+  border:2.5px solid var(--border);background:var(--amber);
+  color:var(--text);box-shadow:2px 2px 0 var(--border);
+}
 .nav-tab{
   border-radius:7px;text-transform:uppercase;letter-spacing:.7px;font-weight:700;
   border:2px solid transparent;
@@ -907,11 +916,12 @@ input[type=text],textarea,.note-input{
 
 @media (max-width:640px){
   .nav{
-    padding-left:max(12px, env(safe-area-inset-left, 0px));
-    padding-right:max(12px, env(safe-area-inset-right, 0px));
+    padding-left:max(16px, env(safe-area-inset-left, 0px));
+    padding-right:max(16px, env(safe-area-inset-right, 0px));
   }
-  .nav-brand{margin-right:8px}
-  .nav-name{display:none}
+  .nav-brand{margin-right:8px;gap:7px}
+  .nav-logo{font-size:14px;padding:0 8px}
+  .nav-name{font-size:13px}
 
   /* square icon tabs — the label is carried by aria-label/title */
   .nav-tabs{flex:0 1 auto;margin-left:auto;gap:6px}
@@ -923,6 +933,14 @@ input[type=text],textarea,.note-input{
   }
   .nav-tab.active{border-color:var(--border)}
   .nt-lbl{display:none}
+}
+
+/* Measured, not guessed: the full lockup plus four 44px tabs plus padding
+   needs 358px, so 370 keeps ~12px of slack and "Tracker" survives on every
+   iPhone from the SE up. Below that the tabs win -- they're the controls;
+   "Tracker" is the adjective, and the badge still names the app. */
+@media (max-width:370px){
+  .nav-name{display:none}
   .nt-ico{font-size:19px;line-height:1}
 
   /* tighter gutters so cards get more of the narrow screen */
