@@ -158,7 +158,7 @@ Paste this into Emergent as a single message.
 >    this one.
 > 6. After deploying, fetch the LIVE deployed URL's `frontend/sw.js` (or
 >    `sw.js`, whichever resolves) yourself and paste back the `CACHE_VERSION`
->    line it actually contains. I need to see that this matches v29 on the
+>    line it actually contains. I need to see that this matches v35 on the
 >    live site, not just in your workspace.
 
 ---
