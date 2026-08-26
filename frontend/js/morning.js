@@ -54,9 +54,13 @@ function buildMorningCard(){
   if(hoursRow){
     hoursRow.innerHTML='';
     ['<4','4','5','6','7','8','9','10+'].forEach(h=>{
-      const btn=document.createElement('div');
-      btn.className='sh-btn'+(saved&&saved.sleepHours===h?' on':'');
+      const btn=document.createElement('button');
+      btn.type='button';
+      const on=!!(saved&&saved.sleepHours===h);
+      btn.className='sh-btn'+(on?' on':'');
       btn.textContent=h;
+      btn.setAttribute('aria-pressed', on?'true':'false');
+      btn.setAttribute('aria-label', (h==='<4'?'Under 4':h==='10+'?'10 or more':h)+' hours of sleep');
       btn.onclick=()=>selectSleepHours(h);
       hoursRow.appendChild(btn);
     });
@@ -93,7 +97,9 @@ function toggleOvernightItem(i){
 
 function selectSleepHours(h){
   document.querySelectorAll('.sh-btn').forEach(b=>{
-    b.classList.toggle('on',b.textContent===h);
+    const on = b.textContent===h;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on?'true':'false');
   });
 }
 
@@ -162,6 +168,24 @@ function toggleMorning(){
   const isOpen=body.classList.contains('open');
   body.classList.toggle('open',!isOpen);
   chev.classList.toggle('open',!isOpen);
+  const head=document.querySelector('.morning-header');
+  if(head) head.setAttribute('aria-expanded', String(!isOpen));
+}
+
+/* The 20 collapsible card headers were built to match this one and all got
+   role/tabindex/keyboard handling. This, the original, never did. */
+function initMorningHeader(){
+  const head=document.querySelector('.morning-header');
+  if(!head||head.dataset.wired) return;
+  head.dataset.wired='1';
+  head.setAttribute('role','button');
+  head.setAttribute('tabindex','0');
+  head.setAttribute('aria-controls','morningBody');
+  head.setAttribute('aria-expanded',
+    String(!!document.getElementById('morningBody')?.classList.contains('open')));
+  head.addEventListener('keydown', e=>{
+    if(e.key==='Enter'||e.key===' '){ e.preventDefault(); toggleMorning(); }
+  });
 }
 
 // ═══════════════════════════════════════════════════════════════

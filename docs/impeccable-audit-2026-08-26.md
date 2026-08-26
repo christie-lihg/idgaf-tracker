@@ -5,6 +5,36 @@
 all four views, device-emulated capture on iPhone 17 Pro simulator, computed WCAG
 ratios (never eyeballed).
 
+## Status: fixed, same day
+
+Everything below was remediated in commit range `914f968..HEAD`. Re-measured
+after: **0 contrast failures in either theme** (was ~60), **0 controls under
+the 24px WCAG AA target floor** (was 31 at 22×27), **0 `div`s with an onclick
+and no role** (was 4 sets, 36 controls), **0 cards with `backdrop-filter`**
+(was 27 of 27), **0 focusable controls inside closed modals** (was 29).
+
+Post-fix score: **20/20**. The original report is kept verbatim below rather
+than rewritten, because the findings are the useful part and a report that
+edits itself to look good afterwards is worth nothing.
+
+Three things were deliberately NOT taken to the ideal, and saying so is part
+of the result:
+
+- **`.sh-btn` sleep bubbles are 34×34, not 44×44.** Eight controls on one
+  line at 375px cannot each be 44px; the arithmetic does not allow it. They
+  clear the 24px AA floor. The alternative was wrapping to two rows, which is
+  the exact thing Christie asked to have fixed.
+- **`.rd-day` weekday buttons are 39×39** for the same reason at seven across.
+- **Open modals do not trap focus.** Focus can tab out behind an open dialog.
+  This is not a WCAG AA failure (2.1.2 is about not being trapped) but it is
+  the remaining keyboard gap.
+
+One finding surfaced during the fix pass that this audit missed, recorded
+below as **[P1-7]**, because it is the more interesting one: the audit only
+scanned *visible* elements, so it could not see it.
+
+---
+
 ## Audit health score
 
 | # | Dimension | Score | Key finding |
@@ -395,6 +425,33 @@ the Win95 bevel insets, which genuinely should not be tokens. Two are not:
 
 **Fix:** `color-mix(in oklch, var(--chart5) 5%, transparent)` or a dedicated token.
 Low value; noted for completeness.
+
+---
+
+### [P1-7] 29 focusable controls sat in the tab order inside invisible modals
+
+**Found during remediation, not by the audit.** **Category:** Accessibility
+**Standard:** WCAG 2.4.3 Focus Order (A)
+
+```css
+.modal-overlay{ opacity:0; pointer-events:none; }   /* the "closed" state */
+```
+
+`pointer-events:none` stops the mouse. It does nothing to the keyboard.
+`display` stayed `flex` and `visibility` stayed `visible`, so every control
+inside all five modals stayed focusable. Tabbing from the top of the page
+landed on a close button for a dialog nobody could see, fourteen stops before
+reaching anything real.
+
+**Why the audit missed it:** every probe filtered to visible elements before
+measuring, which is correct for contrast and target size and exactly wrong
+here. The defect is *only* visible in the tab order. Caught by tabbing through
+the app to verify the new focus ring, which is the kind of thing a numeric
+probe does not do.
+
+**Fix:** `visibility:hidden` on the closed state, `visibility:visible` on
+`.open`. `visibility` is the property that removes a subtree from the tab
+order, and it transitions discretely so the fade still works. Verified: 29 → 0.
 
 ---
 

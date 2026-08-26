@@ -69,6 +69,9 @@ Paste this into Emergent as a single message.
 > frontend/js/symptoms.js
 > frontend/js/morning.js
 > frontend/js/past-day-modal.js
+> frontend/js/theme.js
+> frontend/js/cycle.js
+> frontend/js/today.js
 > frontend/index.html
 > frontend/css/styles.css
 > frontend/sw.js
@@ -83,7 +86,14 @@ Paste this into Emergent as a single message.
 >
 > Notes:
 > - `triggers.js`, `trends.js`, `treatments.js`, `correlations.js`,
->   `onboarding.js` and `reactions.js` are new files.
+>   `onboarding.js`, `reactions.js` and `theme.js` are new files.
+> - `frontend/index.html` contains an INLINE `<script>` in `<head>`, before
+>   the stylesheet link, that sets `data-theme`. It has to stay inline and
+>   stay before the stylesheet: deferred or moved, the app flashes white on
+>   every load, which is the exact moment the dark theme exists for.
+> - `js/theme.js` must load BEFORE `js/init.js`. `init.js` executes at load
+>   time and calls `initTheme()` behind a `typeof` guard, so the wrong order
+>   fails silently rather than erroring.
 > - The root `index.html` is a redirect to `frontend/`, not the app itself.
 > - The three PNGs are binary — fetch and write them as binary, not through any
 >   text-mode tool.
@@ -98,7 +108,7 @@ Paste this into Emergent as a single message.
 >   are keyed by array position, so reordering silently relabels existing
 >   history.
 >
-> **After all 23 files are written, in this exact order:**
+> **After all 26 files are written, in this exact order:**
 >
 > 1. Run ALL of these and report the actual output of each, not just pass/fail.
 >    Each one probes a DIFFERENT file, because a partial sync is the failure
@@ -127,8 +137,15 @@ Paste this into Emergent as a single message.
 >    - `grep -c "read:d=>" frontend/js/dashboard.js` → must be **6**
 >    - `grep -c "nav-wordmark" frontend/index.html` → must be **1**
 >    - `grep -c "nav-right" frontend/index.html` → must be **0**
->    - `wc -c < frontend/css/styles.css` → must be **61136**
->    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v33`**
+>    - `grep -c "createElement('button')" frontend/js/today.js` → must be **1**
+>    - `grep -c "focus-visible" frontend/css/styles.css` → must be **6**
+>    - `grep -c "var(--on-bright)" frontend/css/styles.css` → must be **14**
+>    - `grep -c 'data-theme="dark"' frontend/css/styles.css` → must be **12**
+>    - `grep -c "<main" frontend/index.html` → must be **1**
+>    - `grep -c "js/theme.js" frontend/sw.js` → must be **1**
+>    - `grep -o -- "--muted:#[0-9a-f]*" frontend/css/styles.css | head -1` → must read **`--muted:#6b6394`**
+>    - `wc -c < frontend/css/styles.css` → must be **70105**
+>    - `grep CACHE_VERSION frontend/sw.js` → must read **`idgaf-tracker-v35`**
 >
 >    If ANY of these is wrong, the sync is incomplete. Do not deploy. Re-fetch
 >    the specific file that failed and re-check before continuing.
@@ -172,6 +189,11 @@ Paste this into Emergent as a single message.
 | **Sleep row fixes** | the 0–10 scale labels sit either side of the slider instead of being crushed into a 32px column; the eight hour bubbles stay on one line |
 | **One sleep question** | the duplicate end-of-day Sleep Quality slider is gone — the morning check-in asks it, and the chart and doctor summary now read it from there |
 | **Collapsible cards** | every non-chart card folds shut, state remembered per card |
+| **Keyboard access** | the 22 symptom tiles, 8 sleep-hour bubbles, 5 flow buttons and the morning header were `div`s with a JS onclick; all are real controls now, so the app can be used without a pointer |
+| **Focus ring** | there was no visible focus indicator anywhere; now a 3px offset ring in `--border` |
+| **Contrast** | `--muted` was short of 4.5:1 on all four surfaces across ~60 elements; the "improving" KPI trend was 1.76:1 |
+| **Dark mode** | three states (auto/light/dark), no flash on load, charts follow the theme |
+| **Tab order** | 29 controls inside five invisible modals sat ahead of the page in the tab order |
 | **The app says its name** | the nav badge is the IDGAF wordmark instead of a ✦ that named nothing; "Tracker" beside it down to 370px; an empty `.nav-right` spacer that was holding 42px hostage is gone |
 
 ## If this still doesn't work

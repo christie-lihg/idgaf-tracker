@@ -150,7 +150,11 @@ function closePeriodModal(){
 }
 
 function selectFlow(f){
-  document.querySelectorAll('.flow-btn').forEach(b=>b.classList.toggle('on',b.dataset.f===f));
+  document.querySelectorAll('.flow-btn').forEach(b=>{
+    const on = b.dataset.f===f;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on?'true':'false');
+  });
 }
 
 function savePeriodDay(){

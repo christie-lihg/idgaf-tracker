@@ -121,7 +121,7 @@ function renderDashboard(){
     topDiv.innerHTML=symTotals.map(x=>`
       <div class="db-row">
         <div class="db-name">${SYMS[x.sym].icon} ${SYMS[x.sym].label}</div>
-        <div class="bar-track"><div class="bar-fill" style="width:${Math.round((x.count/maxC)*100)}%"></div></div>
+        <div class="bar-track"><div class="bar-fill" style="transform:scaleX(${(x.count/maxC).toFixed(3)})"></div></div>
         <div class="db-score">${x.count}</div>
         <div class="db-max">events</div>
       </div>`).join('');

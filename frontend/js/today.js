@@ -35,13 +35,22 @@ function buildSymGrid(log){
   grid.innerHTML='';
   SYMS.forEach((s,i)=>{
     const c=counts[i]||0;
-    const tile=document.createElement('div');
+    // A <button>, not a div. This is the one control the whole app exists
+    // for; as a div with a JS onclick it was unreachable by keyboard, switch
+    // device or VoiceOver, which meant the entire product was.
+    const tile=document.createElement('button');
+    tile.type='button';
     tile.className='sym-tile'+(c>0?' logged':'');
     tile.id='tile_'+i;
     tile.onclick=()=>tapSym(i);
+    // The count is rendered as a badge, which a screen reader would read as a
+    // bare number next to a label. Say it in words instead.
+    tile.setAttribute('aria-label', c>0
+      ? `${s.label}. Logged ${c} time${c!==1?'s':''} today, last at ${lastT[i]}. Tap to log another.`
+      : `${s.label}. Not logged today. Tap to log.`);
     tile.innerHTML=`
-      <div class="tile-badge${c>0?' on':''}" id="badge_${i}">${c}</div>
-      <div class="tile-icon">${s.icon}</div>
+      <div class="tile-badge${c>0?' on':''}" id="badge_${i}" aria-hidden="true">${c}</div>
+      <div class="tile-icon" aria-hidden="true">${s.icon}</div>
       <div class="tile-label">${s.label}</div>
       ${c>0?`<div class="tile-last">Last: ${lastT[i]}</div>`:''}`;
     grid.appendChild(tile);
@@ -108,7 +117,7 @@ function buildTimeline(log,today){
     groups[g].forEach(e=>{
       const s=SYMS[e.sym];
       const intLabel=['','Mild','Moderate','Severe'];
-      const timeDisplay=e.overnight?`<span style="font-size:10px;background:var(--mint);color:var(--forest);border-radius:4px;padding:1px 5px;font-weight:600">overnight</span>`:e.time;
+      const timeDisplay=e.overnight?`<span style="font-size:10px;background:var(--mint);color:var(--forest-fg);border-radius:4px;padding:1px 5px;font-weight:600">overnight</span>`:e.time;
       const nameDisplay=e.overnight&&e.overnightLabel?`🌙 ${e.overnightLabel}`:`${s.icon} ${s.label}`;
       html+=`<div class="tl-row">
         <div class="tl-time">${timeDisplay}</div>

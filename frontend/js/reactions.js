@@ -93,7 +93,7 @@ function renderReactionChart(){
     return `
       <div class="rx-row">
         <div class="rx-row-lbl">${r.icon} ${r.label}</div>
-        <div class="rx-bar-track"><div class="rx-bar rx-bar-${r.id}" style="width:${pct}%"></div></div>
+        <div class="rx-bar-track"><div class="rx-bar rx-bar-${r.id}" style="transform:scaleX(${(pct/100).toFixed(3)})"></div></div>
         <div class="rx-row-n">${n}</div>
       </div>`;
   }).join('') + `<p class="cyc-note">${total} day${total!==1?'s':''} rated in the last 30.</p>`;
